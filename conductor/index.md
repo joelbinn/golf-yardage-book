@@ -16,5 +16,5 @@
 ## Active Tracks
 - *(No active tracks)*
 
-## Completed Tracks
-- [Initiera Angular PWA & Grundstruktur](tracks/init-angular-pwa/index.md)
+## Archived Tracks
+- [Initiera Angular PWA & Grundstruktur](archive/init-angular-pwa/index.md)
