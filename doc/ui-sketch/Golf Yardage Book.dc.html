@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;600;700&display=swap"><style>
+body{margin:0;background:#f5ead8;font-family:"Figtree",system-ui,sans-serif;color:#201e1d}
+*,*::before,*::after{box-sizing:border-box}
+button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
+a{color:#8c491a;text-underline-offset:3px}a:hover{color:#c67139}
+:focus-visible{outline:2px solid #c67139;outline-offset:2px}
+::-webkit-scrollbar{display:none}
+@keyframes pulse{0%{transform:scale(1);opacity:.55}70%{transform:scale(2.6);opacity:0}100%{opacity:0}}
+</style></helmet>
+<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;gap:18px;padding:28px 16px 40px;background:radial-gradient(120% 80% at 50% 0%, #f9f4ed 0%, #f5ead8 60%, #eee7db 100%)">
+
+  <div style="display:flex;align-items:baseline;gap:12px;max-width:390px;width:100%">
+    <h1 style="font-family:'Caprasimo',serif;font-size:26px;line-height:1.1;margin:0;letter-spacing:-.015em">Golf Yardage Book</h1>
+    <span style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#82796a">PWA · mobil</span>
+  </div>
+
+  <div style="width:390px;height:844px;flex:none;border-radius:44px;background:#f5ead8;box-shadow:0 12px 32px rgba(46,43,37,.22), 0 0 0 10px #201e1d;overflow:hidden;position:relative;display:flex;flex-direction:column">
+
+    <div style="height:44px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 26px;font-size:13px;font-weight:700;background:#f5ead8;position:relative;z-index:5">
+      <span>14:32</span>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span style="font-size:11px;font-weight:600;color:#645c50">offline</span>
+        <span style="width:22px;height:11px;border-radius:3px;border:1.5px solid #201e1d;display:block;position:relative"><span style="position:absolute;inset:1.5px;right:6px;background:#201e1d;border-radius:1px"></span></span>
+      </div>
+    </div>
+
+    <!-- ══ SPELA RUNDA ══ -->
+    <sc-if value="{{ isPlay }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1;display:flex;flex-direction:column;min-height:0;background:#201e1d">
+
+      <div style="flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 12px 10px;background:#f5ead8">
+        <button onClick="{{ prevHole }}" style="width:44px;height:44px;flex:none;border-radius:999px;background:#ebddc5;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#201e1d" style-hover="background:#dcd3c4">‹</button>
+        <div style="flex:1;text-align:center;line-height:1.05;white-space:nowrap">
+          <div style="font-family:'Caprasimo',serif;font-size:23px">Hål {{ holeNo }}</div>
+          <div style="font-size:11.5px;font-weight:600;color:#645c50;letter-spacing:.02em;white-space:nowrap">Par {{ par }} · Index {{ hcp }} · {{ holeLength }}</div>
+        </div>
+        <button onClick="{{ nextHole }}" style="width:44px;height:44px;flex:none;border-radius:999px;background:#ebddc5;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#201e1d" style-hover="background:#dcd3c4">›</button>
+      </div>
+
+      <div style="position:relative;flex:1;min-height:0;overflow:hidden">
+        <svg viewBox="0 0 320 460" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%;display:block">
+          <rect x="0" y="0" width="320" height="460" fill="#3d472b"></rect>
+          <path d="M20 460 C 40 360, 10 300, 30 210 L 0 190 L 0 460 Z" fill="#33402a"></path>
+          <path d="M150 460 C 92 396, 84 306, 124 244 C 152 198, 172 156, 166 112 C 212 132, 234 192, 218 254 C 202 322, 200 388, 180 460 Z" fill="#56633f"></path>
+          <path d="M60 300 C 84 268, 96 288, 92 312 C 88 340, 62 348, 54 328 C 48 312, 50 312, 60 300 Z" fill="#3c5f6b"></path>
+          <ellipse cx="238" cy="236" rx="26" ry="15" fill="#e1cfa8" opacity=".95"></ellipse>
+          <ellipse cx="112" cy="182" rx="21" ry="13" fill="#e1cfa8" opacity=".95"></ellipse>
+          <ellipse cx="176" cy="96" rx="50" ry="36" fill="#8fa073"></ellipse>
+          <ellipse cx="176" cy="96" rx="50" ry="36" fill="none" stroke="#b9c79c" stroke-width="1.5"></ellipse>
+          <line x1="176" y1="92" x2="176" y2="58" stroke="#f9f4ed" stroke-width="2"></line>
+          <path d="M176 58 L 192 64 L 176 70 Z" fill="#c67139"></path>
+          <circle cx="176" cy="128" r="3.5" fill="#f9f4ed"></circle>
+          <circle cx="176" cy="96" r="4.5" fill="#c67139" stroke="#f9f4ed" stroke-width="1.5"></circle>
+          <circle cx="176" cy="62" r="3.5" fill="#f9f4ed"></circle>
+          <polyline points="{{ shotPoints }}" fill="none" stroke="#f5ead8" stroke-width="2" stroke-dasharray="5 5" opacity=".85"></polyline>
+          <sc-for list="{{ shotDots }}" as="s" hint-placeholder-count="0">
+            <circle cx="{{ s.x }}" cy="{{ s.y }}" r="4" fill="#f5ead8"></circle>
+          </sc-for>
+          <sc-for list="{{ mapHazards }}" as="h" hint-placeholder-count="2">
+            <g>
+              <circle cx="{{ h.x }}" cy="{{ h.y }}" r="11" fill="#201e1d" opacity=".55"></circle>
+              <circle cx="{{ h.x }}" cy="{{ h.y }}" r="6" fill="{{ h.fill }}"></circle>
+            </g>
+          </sc-for>
+          <circle cx="{{ playerX }}" cy="{{ playerY }}" r="9" fill="#c67139" opacity=".3"></circle>
+          <circle cx="{{ playerX }}" cy="{{ playerY }}" r="6" fill="#c67139" stroke="#f9f4ed" stroke-width="2.5"></circle>
+        </svg>
+
+        <div style="position:absolute;top:10px;left:10px;display:flex;align-items:center;gap:6px;padding:6px 12px 6px 9px;border-radius:999px;background:rgba(32,30,29,.82);color:#f5ead8;font-size:11.5px;font-weight:700;letter-spacing:.02em">
+          <span style="width:9px;height:9px;border-radius:999px;background:#8fa073;display:block"></span>GPS ±3 m
+        </div>
+        <button onClick="{{ toggleUnit }}" style="position:absolute;top:10px;right:10px;padding:6px 14px;border-radius:999px;background:rgba(32,30,29,.82);color:#f5ead8;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase" style-hover="background:#201e1d">{{ unitLabel }}</button>
+
+        <div style="position:absolute;left:10px;right:10px;bottom:10px;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:2px">
+            <sc-for list="{{ hazards }}" as="h" hint-placeholder-count="3">
+              <div style="flex:none;display:flex;align-items:center;gap:7px;padding:7px 12px;border-radius:999px;background:rgba(245,234,216,.94);box-shadow:0 3px 10px rgba(46,43,37,.16)">
+                <span style="width:10px;height:10px;border-radius:999px;background:{{ h.fill }};display:block"></span>
+                <span style="font-size:12px;font-weight:600;white-space:nowrap">{{ h.name }}</span>
+                <span style="font-family:'Caprasimo',serif;font-size:15px">{{ h.dist }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex:none;background:#201e1d;color:#f5ead8;padding:14px 16px 10px">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:10px">
+          <div style="text-align:center;min-width:62px">
+            <div style="font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#a19786;font-weight:700">Fram</div>
+            <div style="font-family:'Caprasimo',serif;font-size:30px;line-height:1.1">{{ dFront }}</div>
+          </div>
+          <div style="text-align:center;flex:1">
+            <div style="font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#c67139;font-weight:700">Mitten</div>
+            <div style="font-family:'Caprasimo',serif;font-size:64px;line-height:.98;letter-spacing:-.02em">{{ dCenter }}</div>
+          </div>
+          <div style="text-align:center;min-width:62px">
+            <div style="font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#a19786;font-weight:700">Bak</div>
+            <div style="font-family:'Caprasimo',serif;font-size:30px;line-height:1.1">{{ dBack }}</div>
+          </div>
+        </div>
+        <div style="text-align:center;font-size:11px;font-weight:600;color:#a19786;margin-top:2px;letter-spacing:.08em;text-transform:uppercase">{{ unitLong }} till green</div>
+      </div>
+
+      <div style="flex:none;background:#f5ead8;padding:12px 14px 10px;display:flex;flex-direction:column;gap:9px">
+        <div style="display:flex;gap:9px;align-items:center">
+          <button onClick="{{ registerShot }}" style="flex:1;height:54px;border-radius:999px;background:#c67139;color:#f5ead8;font-family:'Caprasimo',serif;font-size:17px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 3px 10px rgba(46,43,37,.16)" style-hover="background:#b2622d" style-active="background:#8c491a">Registrera slag <span style="font-size:13px;font-family:'Figtree',sans-serif;font-weight:700;background:rgba(32,30,29,.22);border-radius:999px;padding:2px 10px">{{ shotCount }}</span></button>
+          <button onClick="{{ openHazard }}" title="Lägg till hinder" style="width:54px;height:54px;flex:none;border-radius:999px;background:#ebddc5;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700" style-hover="background:#dcd3c4">+</button>
+        </div>
+        <div style="display:flex;gap:9px;align-items:center">
+          <button onClick="{{ undoShot }}" style="flex:none;padding:0 16px;height:40px;border-radius:999px;border:1px solid rgba(32,30,29,.16);font-size:13px;font-weight:600" style-hover="background:rgba(32,30,29,.07)">Ångra slag</button>
+          <button onClick="{{ endHole }}" style="flex:1;height:40px;border-radius:999px;background:#201e1d;color:#f5ead8;font-size:13.5px;font-weight:700" style-hover="background:#474238">Avsluta hål {{ holeNo }}</button>
+        </div>
+        <div style="font-size:11px;color:#645c50;font-weight:600">{{ lastShotLabel }}</div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ══ BANOR ══ -->
+    <sc-if value="{{ isCourses }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:1;min-height:0;overflow-y:auto;padding:8px 18px 24px">
+      <h2 style="font-family:'Caprasimo',serif;font-size:32px;margin:0 0 4px;letter-spacing:-.015em">Banor</h2>
+      <p style="font-size:13px;color:#645c50;margin:0 0 18px">3 banor sparade lokalt · synkade mot GitHub</p>
+
+      <div style="border-radius:28px;background:#201e1d;color:#f5ead8;padding:18px 20px;margin-bottom:18px">
+        <div style="font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#c67139;font-weight:700;margin-bottom:4px">Pågående runda</div>
+        <div style="font-family:'Caprasimo',serif;font-size:21px;line-height:1.15">Bro Hof Slott – Stadium</div>
+        <div style="font-size:12.5px;color:#a19786;margin-top:2px">Hål {{ holeNo }} av 18 · {{ toParLabel }}</div>
+        <button onClick="{{ goPlay }}" style="width:100%;height:46px;margin-top:14px;border-radius:999px;background:#c67139;color:#f5ead8;font-family:'Caprasimo',serif;font-size:15px" style-hover="background:#b2622d">Fortsätt runda</button>
+      </div>
+
+      <sc-for list="{{ courses }}" as="c" hint-placeholder-count="3">
+        <div style="border-radius:28px;background:#ebddc5;padding:16px 18px;margin-bottom:12px">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+            <div>
+              <div style="font-family:'Caprasimo',serif;font-size:18px;line-height:1.2">{{ c.name }}</div>
+              <div style="font-size:12px;color:#645c50;margin-top:3px">{{ c.meta }}</div>
+            </div>
+            <span style="flex:none;font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;background:{{ c.tagBg }};color:{{ c.tagFg }}">{{ c.tag }}</span>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:14px">
+            <button onClick="{{ goPlay }}" style="flex:1;height:42px;border-radius:999px;background:#c67139;color:#f5ead8;font-family:'Caprasimo',serif;font-size:14px" style-hover="background:#b2622d">Starta runda</button>
+            <button onClick="{{ goEdit }}" style="flex:none;padding:0 18px;height:42px;border-radius:999px;border:1px solid rgba(32,30,29,.16);font-size:13px;font-weight:600" style-hover="background:rgba(32,30,29,.07)">Redigera</button>
+          </div>
+        </div>
+      </sc-for>
+
+      <button onClick="{{ goEdit }}" style="width:100%;height:52px;margin-top:6px;border-radius:999px;border:1.5px dashed rgba(32,30,29,.28);font-size:14px;font-weight:700;color:#8c491a" style-hover="background:rgba(198,113,57,.1)">+ Registrera ny bana</button>
+    </div>
+    </sc-if>
+
+    <!-- ══ REGISTRERA BANA ══ -->
+    <sc-if value="{{ isEdit }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:1;min-height:0;overflow-y:auto;padding:8px 18px 24px">
+      <h2 style="font-family:'Caprasimo',serif;font-size:30px;margin:0 0 14px;letter-spacing:-.015em">Registrera bana</h2>
+
+      <div style="margin-bottom:14px">
+        <label style="display:block;font-size:12px;font-weight:600;margin-bottom:5px;color:#474238">Bana-namn</label>
+        <input value="Bro Hof Slott – Stadium Course" style="width:100%;height:46px;border-radius:999px;border:1px solid rgba(32,30,29,.16);background:#f9f4ed;padding:0 18px;font-size:14px;font-family:'Figtree',sans-serif;color:#201e1d">
+      </div>
+
+      <div style="margin-bottom:18px">
+        <label style="display:block;font-size:12px;font-weight:600;margin-bottom:5px;color:#474238">Antal hål</label>
+        <div style="display:flex;gap:6px;padding:4px;border-radius:999px;background:#ebddc5">
+          <button onClick="{{ setNine }}" style="{{ nineStyle }}">9 hål</button>
+          <button onClick="{{ setEighteen }}" style="{{ eighteenStyle }}">18 hål</button>
+        </div>
+      </div>
+
+      <div style="border-radius:28px;background:#ebddc5;padding:16px 18px;margin-bottom:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <button onClick="{{ prevHole }}" style="width:38px;height:38px;border-radius:999px;background:#f9f4ed;font-size:18px;font-weight:700" style-hover="background:#dcd3c4">‹</button>
+          <div style="text-align:center">
+            <div style="font-family:'Caprasimo',serif;font-size:20px">Hål {{ holeNo }}</div>
+            <div style="font-size:11.5px;color:#645c50;font-weight:600">Par {{ par }} · Index {{ hcp }}</div>
+          </div>
+          <button onClick="{{ nextHole }}" style="width:38px;height:38px;border-radius:999px;background:#f9f4ed;font-size:18px;font-weight:700" style-hover="background:#dcd3c4">›</button>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:14px">
+          <div style="flex:1">
+            <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#645c50;margin-bottom:5px">Par</div>
+            <div style="display:flex;align-items:center;gap:8px;background:#f9f4ed;border-radius:999px;padding:4px">
+              <button onClick="{{ parDown }}" style="width:34px;height:34px;border-radius:999px;font-size:17px;font-weight:700" style-hover="background:#dcd3c4">−</button>
+              <span style="flex:1;text-align:center;font-family:'Caprasimo',serif;font-size:19px">{{ par }}</span>
+              <button onClick="{{ parUp }}" style="width:34px;height:34px;border-radius:999px;font-size:17px;font-weight:700" style-hover="background:#dcd3c4">+</button>
+            </div>
+          </div>
+          <div style="flex:1">
+            <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#645c50;margin-bottom:5px">Index</div>
+            <div style="display:flex;align-items:center;gap:8px;background:#f9f4ed;border-radius:999px;padding:4px">
+              <button onClick="{{ hcpDown }}" style="width:34px;height:34px;border-radius:999px;font-size:17px;font-weight:700" style-hover="background:#dcd3c4">−</button>
+              <span style="flex:1;text-align:center;font-family:'Caprasimo',serif;font-size:19px">{{ hcp }}</span>
+              <button onClick="{{ hcpUp }}" style="width:34px;height:34px;border-radius:999px;font-size:17px;font-weight:700" style-hover="background:#dcd3c4">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#645c50;margin:0 0 8px 4px">Green — tre punkter</div>
+      <div style="border-radius:28px;background:#ebddc5;padding:8px 8px;margin-bottom:14px;display:flex;flex-direction:column;gap:4px">
+        <sc-for list="{{ greenPoints }}" as="g" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;gap:10px;padding:8px 10px">
+            <span style="width:12px;height:12px;border-radius:999px;background:{{ g.dot }};flex:none"></span>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:14px;font-weight:600">{{ g.label }}</div>
+              <div style="font-size:11px;color:#645c50;font-family:ui-monospace,Menlo,monospace">{{ g.coord }}</div>
+            </div>
+            <button onClick="{{ g.onCapture }}" style="{{ g.btnStyle }}">{{ g.btnLabel }}</button>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#645c50;margin:0 0 8px 4px">Hinder på hål {{ holeNo }}</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+        <sc-for list="{{ hazards }}" as="h" hint-placeholder-count="2">
+          <div style="display:flex;align-items:center;gap:10px;border-radius:999px;background:#ebddc5;padding:10px 16px">
+            <span style="width:11px;height:11px;border-radius:999px;background:{{ h.fill }};flex:none"></span>
+            <span style="flex:1;font-size:13.5px;font-weight:600">{{ h.name }}</span>
+            <span style="font-size:11px;color:#645c50;font-family:ui-monospace,Menlo,monospace">{{ h.coord }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <button onClick="{{ openHazard }}" style="width:100%;height:50px;border-radius:999px;background:#c67139;color:#f5ead8;font-family:'Caprasimo',serif;font-size:15px" style-hover="background:#b2622d">Lägg till hinder på min position</button>
+      <p style="font-size:11.5px;color:#645c50;margin:10px 4px 0">Du kan även trycka på kartan för att placera ett hinder manuellt.</p>
+    </div>
+    </sc-if>
+
+    <!-- ══ HISTORIK ══ -->
+    <sc-if value="{{ isHistory }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:1;min-height:0;overflow-y:auto;padding:8px 18px 24px">
+      <h2 style="font-family:'Caprasimo',serif;font-size:32px;margin:0 0 4px;letter-spacing:-.015em">Historik</h2>
+      <p style="font-size:13px;color:#645c50;margin:0 0 18px">12 rundor · alla lagrade offline</p>
+      <sc-for list="{{ rounds }}" as="r" hint-placeholder-count="4">
+        <button onClick="{{ r.onOpen }}" style="width:100%;text-align:left;border-radius:28px;background:#ebddc5;padding:16px 18px;margin-bottom:10px;display:flex;align-items:center;gap:14px" style-hover="background:#dcd3c4">
+          <div style="flex:none;width:60px;height:60px;border-radius:999px;background:{{ r.badgeBg }};color:{{ r.badgeFg }};display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1">
+            <span style="font-family:'Caprasimo',serif;font-size:20px">{{ r.toPar }}</span>
+            <span style="font-size:10px;font-weight:700;margin-top:3px">{{ r.strokes }}</span>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-family:'Caprasimo',serif;font-size:16px;line-height:1.2">{{ r.course }}</div>
+            <div style="font-size:12px;color:#645c50;margin-top:3px">{{ r.date }} · {{ r.holes }}</div>
+            <div style="font-size:11.5px;color:#645c50;margin-top:5px">Puttar {{ r.putts }} · Fairway {{ r.fw }} · GIR {{ r.gir }}</div>
+          </div>
+        </button>
+      </sc-for>
+    </div>
+    </sc-if>
+
+    <!-- ══ RUNDÖVERSIKT ══ -->
+    <sc-if value="{{ isSummary }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:1;min-height:0;overflow-y:auto;background:#201e1d;color:#f5ead8;padding:14px 18px 24px">
+      <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#c67139;font-weight:700">Rundöversikt</div>
+      <div style="font-family:'Caprasimo',serif;font-size:24px;line-height:1.15;margin-top:4px">{{ sumCourse }}</div>
+      <div style="font-size:12.5px;color:#a19786">{{ sumMeta }}</div>
+
+      <div style="display:flex;align-items:baseline;gap:14px;margin:20px 0 6px">
+        <span style="font-family:'Caprasimo',serif;font-size:72px;line-height:.9;color:#c67139">{{ sumToPar }}</span>
+        <span style="font-family:'Caprasimo',serif;font-size:30px;color:#f5ead8">{{ sumStrokes }}</span>
+      </div>
+      <div style="font-size:12px;color:#a19786;margin-bottom:20px">{{ sumBreakdown }}</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <sc-for list="{{ stats }}" as="s" hint-placeholder-count="6">
+          <div style="border-radius:22px;background:#2e2b25;padding:14px 16px">
+            <div style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#a19786;font-weight:700">{{ s.label }}</div>
+            <div style="font-family:'Caprasimo',serif;font-size:28px;margin-top:4px">{{ s.value }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#a19786;font-weight:700;margin:22px 0 10px">Hål för hål</div>
+      <div style="display:grid;grid-template-columns:repeat(9,1fr);gap:5px">
+        <sc-for list="{{ holeChips }}" as="h" hint-placeholder-count="18">
+          <div style="border-radius:10px;background:{{ h.bg }};color:{{ h.fg }};padding:6px 0;text-align:center">
+            <div style="font-size:9px;opacity:.7;font-weight:700">{{ h.no }}</div>
+            <div style="font-family:'Caprasimo',serif;font-size:15px;line-height:1.1">{{ h.strokes }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <button onClick="{{ goHistory }}" style="width:100%;height:50px;margin-top:22px;border-radius:999px;background:#c67139;color:#f5ead8;font-family:'Caprasimo',serif;font-size:15px" style-hover="background:#b2622d">Spara &amp; synka till GitHub</button>
+    </div>
+    </sc-if>
+
+    <!-- ══ INSTÄLLNINGAR ══ -->
+    <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:1;min-height:0;overflow-y:auto;padding:8px 18px 24px">
+      <h2 style="font-family:'Caprasimo',serif;font-size:32px;margin:0 0 18px;letter-spacing:-.015em">Inställningar</h2>
+
+      <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#645c50;margin:0 0 8px 4px">Mätarenhet</div>
+      <div style="display:flex;gap:6px;padding:4px;border-radius:999px;background:#ebddc5;margin-bottom:20px">
+        <button onClick="{{ setMeters }}" style="{{ metersStyle }}">Meter</button>
+        <button onClick="{{ setYards }}" style="{{ yardsStyle }}">Yards</button>
+      </div>
+
+      <div style="border-radius:28px;background:#ebddc5;padding:16px 18px;margin-bottom:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:14px;font-weight:700">GPS-precision</div>
+          <span style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px;background:#e1eecc;color:#3d472b"><span style="width:9px;height:9px;border-radius:999px;background:#728157;display:block"></span>±3 m</span>
+        </div>
+        <div style="display:flex;gap:4px;margin-top:12px">
+          <div style="flex:1;height:8px;border-radius:999px;background:#728157"></div>
+          <div style="flex:1;height:8px;border-radius:999px;background:rgba(32,30,29,.12)"></div>
+          <div style="flex:1;height:8px;border-radius:999px;background:rgba(32,30,29,.12)"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:10.5px;color:#645c50;font-weight:600;margin-top:6px">
+          <span>Grön &lt; 5 m</span><span>Gul 5–15 m</span><span>Röd &gt; 15 m</span>
+        </div>
+      </div>
+
+      <div style="border-radius:28px;background:#201e1d;color:#f5ead8;padding:18px 20px;margin-bottom:14px">
+        <div style="font-family:'Caprasimo',serif;font-size:18px">GitHub-synk</div>
+        <div style="font-size:12px;color:#a19786;margin-top:2px">{{ syncStatus }}</div>
+        <div style="display:flex;flex-direction:column;gap:9px;margin-top:14px">
+          <input value="anna-golf" style="width:100%;height:44px;border-radius:999px;border:1px solid rgba(245,234,216,.22);background:#2e2b25;color:#f5ead8;padding:0 16px;font-size:13.5px;font-family:'Figtree',sans-serif">
+          <input value="yardage-book-data" style="width:100%;height:44px;border-radius:999px;border:1px solid rgba(245,234,216,.22);background:#2e2b25;color:#f5ead8;padding:0 16px;font-size:13.5px;font-family:'Figtree',sans-serif">
+          <input type="password" value="ghp_xxxxxxxxxxxxxxxxxxxx" style="width:100%;height:44px;border-radius:999px;border:1px solid rgba(245,234,216,.22);background:#2e2b25;color:#f5ead8;padding:0 16px;font-size:13.5px;font-family:ui-monospace,Menlo,monospace">
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:12px">
+          <div style="flex:1;height:6px;border-radius:999px;background:rgba(245,234,216,.18);overflow:hidden"><div style="width:{{ compactPct }};height:100%;background:#c67139;border-radius:999px"></div></div>
+          <span style="font-size:11px;color:#a19786;font-weight:600;white-space:nowrap">{{ compactLabel }}</span>
+        </div>
+        <button onClick="{{ syncNow }}" style="width:100%;height:46px;margin-top:14px;border-radius:999px;background:#c67139;color:#f5ead8;font-family:'Caprasimo',serif;font-size:15px" style-hover="background:#b2622d">Synka nu</button>
+      </div>
+
+      <div style="display:flex;gap:9px">
+        <button style="flex:1;height:48px;border-radius:999px;border:1px solid rgba(32,30,29,.16);font-size:13.5px;font-weight:700" style-hover="background:rgba(32,30,29,.07)">Exportera .json</button>
+        <button style="flex:1;height:48px;border-radius:999px;border:1px solid rgba(32,30,29,.16);font-size:13.5px;font-weight:700" style-hover="background:rgba(32,30,29,.07)">Importera .json</button>
+      </div>
+      <p style="font-size:11.5px;color:#645c50;margin:12px 4px 0">Banor sparas som <span style="font-family:ui-monospace,Menlo,monospace">/courses/{id}.json</span>, rundor som <span style="font-family:ui-monospace,Menlo,monospace">/rounds/{id}.json</span>.</p>
+    </div>
+    </sc-if>
+
+    <!-- ══ FLIKAR ══ -->
+    <div style="flex:none;height:72px;display:flex;align-items:stretch;background:#f5ead8;border-top:1px solid rgba(32,30,29,.12);padding:6px 8px 12px">
+      <button onClick="{{ goPlay }}" style="{{ tabPlay }}"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21V4"></path><path d="M6 4h11l-2.5 4L17 12H6"></path></svg>Spela</button>
+      <button onClick="{{ goCourses }}" style="{{ tabCourses }}"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"></circle><circle cx="12" cy="12" r="2.5"></circle></svg>Banor</button>
+      <button onClick="{{ goHistory }}" style="{{ tabHistory }}"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14"></path><path d="M5 12h14"></path><path d="M5 17h9"></path></svg>Historik</button>
+      <button onClick="{{ goSettings }}" style="{{ tabSettings }}"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="12" r="1.4" fill="currentColor"></circle><circle cx="12" cy="12" r="1.4" fill="currentColor"></circle><circle cx="18.5" cy="12" r="1.4" fill="currentColor"></circle></svg>Mer</button>
+    </div>
+
+    <!-- ══ SCOREKORT ══ -->
+    <sc-if value="{{ showScore }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;z-index:20;background:rgba(32,30,29,.55);display:flex;align-items:flex-end">
+      <div style="width:100%;background:#f5ead8;border-radius:28px 28px 44px 44px;padding:20px 20px 22px;max-height:96%;overflow-y:auto">
+        <div style="width:44px;height:5px;border-radius:999px;background:rgba(32,30,29,.2);margin:0 auto 14px"></div>
+        <div style="display:flex;align-items:baseline;justify-content:space-between">
+          <h3 style="font-family:'Caprasimo',serif;font-size:24px;margin:0">Hål {{ holeNo }}</h3>
+          <span style="font-size:12.5px;color:#645c50;font-weight:600">Par {{ par }} · {{ holeLength }}</span>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:16px">
+          <sc-for list="{{ scoreRows }}" as="r" hint-placeholder-count="4">
+            <div style="display:flex;align-items:center;gap:12px">
+              <span style="flex:1;font-size:14px;font-weight:600">{{ r.label }}</span>
+              <div style="display:flex;align-items:center;gap:6px;background:#ebddc5;border-radius:999px;padding:4px">
+                <button onClick="{{ r.dec }}" style="width:38px;height:38px;border-radius:999px;font-size:19px;font-weight:700" style-hover="background:#dcd3c4">−</button>
+                <span style="width:34px;text-align:center;font-family:'Caprasimo',serif;font-size:20px">{{ r.value }}</span>
+                <button onClick="{{ r.inc }}" style="width:38px;height:38px;border-radius:999px;font-size:19px;font-weight:700" style-hover="background:#dcd3c4">+</button>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#645c50;margin:18px 0 8px">Fairwayträff</div>
+        <div style="display:flex;gap:6px">
+          <sc-for list="{{ fairwayOpts }}" as="f" hint-placeholder-count="4">
+            <button onClick="{{ f.onPick }}" style="{{ f.style }}">{{ f.label }}</button>
+          </sc-for>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:18px;padding:14px 18px;border-radius:22px;background:#ebddc5">
+          <div>
+            <div style="font-size:14px;font-weight:700">Green in regulation</div>
+            <div style="font-size:11.5px;color:#645c50">{{ girHint }}</div>
+          </div>
+          <button onClick="{{ toggleGir }}" style="{{ girStyle }}"><span style="{{ girKnob }}"></span></button>
+        </div>
+
+        <button onClick="{{ saveScore }}" style="width:100%;height:54px;margin-top:18px;border-radius:999px;background:#c67139;color:#f5ead8;font-family:'Caprasimo',serif;font-size:17px" style-hover="background:#b2622d">Spara &amp; gå till hål {{ nextHoleNo }}</button>
+        <button onClick="{{ closeScore }}" style="width:100%;height:44px;margin-top:6px;border-radius:999px;font-size:13.5px;font-weight:700;color:#645c50" style-hover="background:rgba(32,30,29,.07)">Avbryt</button>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ══ LÄGG TILL HINDER ══ -->
+    <sc-if value="{{ showHazard }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;z-index:20;background:rgba(32,30,29,.55);display:flex;align-items:flex-end">
+      <div style="width:100%;background:#f5ead8;border-radius:28px 28px 44px 44px;padding:20px 20px 24px">
+        <div style="width:44px;height:5px;border-radius:999px;background:rgba(32,30,29,.2);margin:0 auto 14px"></div>
+        <h3 style="font-family:'Caprasimo',serif;font-size:23px;margin:0 0 2px">Nytt hinder</h3>
+        <p style="font-size:12.5px;color:#645c50;margin:0 0 16px">Sparas på din nuvarande GPS-position, hål {{ holeNo }}.</p>
+
+        <div style="display:flex;gap:8px;margin-bottom:14px">
+          <sc-for list="{{ hazardTypes }}" as="t" hint-placeholder-count="4">
+            <button onClick="{{ t.onPick }}" style="{{ t.style }}">
+              <span style="width:12px;height:12px;border-radius:999px;background:{{ t.fill }};display:block"></span>
+              <span style="font-size:12px;font-weight:600">{{ t.label }}</span>
+            </button>
+          </sc-for>
+        </div>
+
+        <label style="display:block;font-size:12px;font-weight:600;margin-bottom:5px;color:#474238">Namn</label>
+        <input value="{{ hazardName }}" onChange="{{ setHazardName }}" placeholder="t.ex. Bunker vänster fairway" style="width:100%;height:48px;border-radius:999px;border:1px solid rgba(32,30,29,.16);background:#f9f4ed;padding:0 18px;font-size:14px;font-family:'Figtree',sans-serif;color:#201e1d">
+
+        <div style="display:flex;align-items:center;gap:8px;margin-top:12px;padding:12px 16px;border-radius:22px;background:#ebddc5;font-size:12px;font-family:ui-monospace,Menlo,monospace;color:#474238">
+          <span style="width:9px;height:9px;border-radius:999px;background:#728157;display:block"></span>59.55112, 17.54096 · ±3 m
+        </div>
+
+        <button onClick="{{ saveHazard }}" style="width:100%;height:54px;margin-top:16px;border-radius:999px;background:#c67139;color:#f5ead8;font-family:'Caprasimo',serif;font-size:17px" style-hover="background:#b2622d">Spara hinder</button>
+        <button onClick="{{ closeHazard }}" style="width:100%;height:44px;margin-top:6px;border-radius:999px;font-size:13.5px;font-weight:700;color:#645c50" style-hover="background:rgba(32,30,29,.07)">Avbryt</button>
+      </div>
+    </div>
+    </sc-if>
+
+  </div>
+
+  <p style="max-width:390px;font-size:12px;line-height:1.5;color:#645c50;margin:0">Prototypen är interaktiv: bläddra mellan hål, registrera slag (avståndet räknas ner och slagkedjan ritas på kartan), lägg till hinder, avsluta hålet i scorekortet och byt enhet meter/yards.</p>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:440,&quot;height&quot;:980}}">
+const HAZ = {
+  bunker: { label: "Bunker", fill: "#e1cfa8" },
+  water: { label: "Vatten", fill: "#3c5f6b" },
+  tree: { label: "Träd", fill: "#8fa073" },
+  custom: { label: "Eget", fill: "#c67139" },
+};
+
+function makeHoles() {
+  const pars = [4,5,3,4,4,3,4,5,4,4,3,5,4,4,3,4,5,4];
+  const hcp  = [7,3,15,1,11,17,5,9,13,8,16,2,10,4,18,6,12,14];
+  const lens = [372,498,168,410,355,152,388,505,340,362,175,512,398,376,164,384,492,358];
+  const sets = [
+    [{ t:"bunker", n:"Fairwaybunker höger", at:230, x:238, y:236 }, { t:"water", n:"Vattenhinder vänster", at:262, x:74, y:314 }],
+    [{ t:"bunker", n:"Bunker vänster fairway", at:198, x:112, y:182 }, { t:"tree", n:"Ekgrupp höger", at:280, x:244, y:150 }],
+    [{ t:"water", n:"Damm framför green", at:132, x:74, y:314 }],
+    [{ t:"bunker", n:"Greenbunker höger", at:340, x:238, y:236 }, { t:"bunker", n:"Slicebunker", at:214, x:112, y:182 }, { t:"tree", n:"Enskild tall", at:268, x:244, y:150 }],
+  ];
+  return pars.map((p, i) => {
+    const set = sets[i % sets.length];
+    const maxAt = Math.max.apply(null, set.map((o) => o.at));
+    return {
+      no: i + 1, par: p, hcp: hcp[i], length: lens[i],
+      // hazards sit between ~35% and ~88% of the hole's length
+      objects: set.map((o, j) => ({
+        ...o, id: "obj-" + i + "-" + j,
+        at: Math.round(lens[i] * (0.35 + 0.53 * (o.at / maxAt))),
+      })),
+    };
+  });
+}
+
+const seg = (on) => "flex:1;height:42px;border-radius:999px;font-size:13.5px;font-weight:700;" +
+  (on ? "background:#201e1d;color:#f5ead8;" : "color:#474238;");
+
+const tabStyle = (on) => "flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:20px;font-size:10.5px;font-weight:700;letter-spacing:.02em;" +
+  (on ? "background:#ebddc5;color:#201e1d;" : "color:#82796a;");
+
+class Component extends DCLogic {
+  state = {
+    screen: "play", holeIdx: 6, unit: "m",
+    shotsByHole: { 6: [] }, holes: makeHoles(),
+    showScore: false, showHazard: false,
+    hazType: "bunker", hazName: "",
+    strokes: 4, putts: 2, bunkerShots: 0, chips: 0, fairway: "center", gir: true,
+    holesCount: 18, greenCaptured: { front: true, center: true, back: false },
+    syncCount: 3, roundIdx: 0,
+  };
+
+  static ROUNDS = [
+    { course: "Bro Hof Slott – Stadium", date: "12 augusti 2026", holes: "18 hål", holesCount: 18, coursePar: 72,
+      toPar: "+4", strokes: "76 slag", putts: "1,8", fw: "64 %", gir: "50 %", bunker: "3", chips: "7", longest: "248 m",
+      breakdown: "Par 72 · 4 birdies · 8 pars · 6 bogeys", badgeBg: "#201e1d", badgeFg: "#f5ead8",
+      scores: [4,5,3,5,4,3,4,6,4,4,3,5,5,4,3,4,5,4], pars: [4,5,3,4,4,3,4,5,4,4,3,5,4,4,3,4,5,4] },
+    { course: "Ullna Golf Club", date: "24 juli 2026", holes: "18 hål", holesCount: 18, coursePar: 71,
+      toPar: "+9", strokes: "80 slag", putts: "2,1", fw: "50 %", gir: "33 %", bunker: "6", chips: "9", longest: "236 m",
+      breakdown: "Par 71 · 1 birdie · 6 pars · 9 bogeys · 2 dubbelbogeys", badgeBg: "#dcd3c4", badgeFg: "#201e1d",
+      scores: [5,4,4,5,6,3,4,5,5,4,4,6,4,5,3,5,5,3], pars: [4,4,3,5,4,3,4,5,4,4,3,5,4,4,3,4,5,4] },
+    { course: "Djursholms GK – Lilla", date: "12 juli 2026", holes: "9 hål", holesCount: 9, coursePar: 34,
+      toPar: "+2", strokes: "36 slag", putts: "1,7", fw: "71 %", gir: "56 %", bunker: "1", chips: "3", longest: "229 m",
+      breakdown: "Par 34 · 1 birdie · 6 pars · 2 bogeys", badgeBg: "#dcd3c4", badgeFg: "#201e1d",
+      scores: [4,3,5,4,4,3,5,4,4], pars: [4,3,4,4,4,3,5,4,3] },
+    { course: "Bro Hof Slott – Stadium", date: "28 juni 2026", holes: "18 hål", holesCount: 18, coursePar: 72,
+      toPar: "+11", strokes: "83 slag", putts: "2,2", fw: "43 %", gir: "28 %", bunker: "8", chips: "11", longest: "241 m",
+      breakdown: "Par 72 · 3 pars · 11 bogeys · 4 dubbelbogeys", badgeBg: "#dcd3c4", badgeFg: "#201e1d",
+      scores: [5,6,4,5,5,4,5,6,4,5,4,6,5,5,3,5,6,5], pars: [4,5,3,4,4,3,4,5,4,4,3,5,4,4,3,4,5,4] },
+  ];
+
+  hole() { return this.state.holes[this.state.holeIdx]; }
+  shots() { return this.state.shotsByHole[this.state.holeIdx] || []; }
+  travelled() { return this.shots().reduce((a, s) => a + s.d, 0); }
+
+  fmt(m) {
+    const v = this.state.unit === "y" ? m * 1.09361 : m;
+    return String(Math.max(0, Math.round(v)));
+  }
+
+  go(screen) { return () => this.setState({ screen }); }
+
+  step(key, delta, min, max) {
+    return () => this.setState((s) => ({ [key]: Math.min(max, Math.max(min, s[key] + delta)) }));
+  }
+
+  moveHole(delta) {
+    return () => this.setState((s) => {
+      const i = Math.min(s.holes.length - 1, Math.max(0, s.holeIdx + delta));
+      const h = s.holes[i];
+      return { holeIdx: i, strokes: h.par, putts: 2, fairway: h.par === 3 ? "na" : "center", gir: true, bunkerShots: 0, chips: 0 };
+    });
+  }
+
+  editHolePar(field, delta, min, max) {
+    return () => this.setState((s) => {
+      const holes = s.holes.slice();
+      const h = { ...holes[s.holeIdx] };
+      h[field] = Math.min(max, Math.max(min, h[field] + delta));
+      holes[s.holeIdx] = h;
+      return { holes };
+    });
+  }
+
+  registerShot = () => this.setState((s) => {
+    const shots = (s.shotsByHole[s.holeIdx] || []).slice();
+    const h = s.holes[s.holeIdx];
+    const done = shots.reduce((a, x) => a + x.d, 0);
+    const left = h.length - done;
+    const d = shots.length === 0 ? Math.round(Math.min(left * 0.62, 245)) : Math.round(Math.max(8, Math.min(left * 0.75, 165)));
+    shots.push({ d });
+    return { shotsByHole: { ...s.shotsByHole, [s.holeIdx]: shots }, strokes: Math.max(h.par, shots.length + 2) };
+  });
+
+  undoShot = () => this.setState((s) => {
+    const shots = (s.shotsByHole[s.holeIdx] || []).slice(0, -1);
+    return { shotsByHole: { ...s.shotsByHole, [s.holeIdx]: shots } };
+  });
+
+  saveScoreAndAdvance = () => {
+    this.setState({ showScore: false });
+    this.moveHole(1)();
+  };
+
+  saveHazard = () => this.setState((s) => {
+    const holes = s.holes.slice();
+    const h = { ...holes[s.holeIdx] };
+    const done = (s.shotsByHole[s.holeIdx] || []).reduce((a, x) => a + x.d, 0);
+    h.objects = h.objects.concat([{
+      id: "obj-new-" + Date.now(), t: s.hazType,
+      n: s.hazName || HAZ[s.hazType].label + " (ny)",
+      at: Math.min(h.length - 12, done + 6), x: 150, y: 372,
+    }]);
+    holes[s.holeIdx] = h;
+    return { holes, showHazard: false, hazName: "" };
+  });
+
+  renderVals() {
+    const s = this.state, h = this.hole();
+    const shots = this.shots(), done = this.travelled();
+    const left = Math.max(0, h.length - done);
+    const unitLong = s.unit === "y" ? "Yards" : "Meter";
+
+    const playerY = 424 - Math.min(0.72, done / Math.max(h.length, 1)) * 330;
+    const shotDots = [], pts = ["150,424"];
+    let acc = 0;
+    shots.forEach((sh, i) => {
+      acc += sh.d;
+      const y = 424 - Math.min(0.72, acc / h.length) * 330;
+      const x = 150 + (i % 2 === 0 ? 14 : -12);
+      shotDots.push({ x, y });
+      pts.push(x + "," + y);
+    });
+
+    const hazards = h.objects.map((o) => {
+      const rem = o.at - done;
+      return { ...o, name: o.n, fill: HAZ[o.t].fill, dist: this.fmt(Math.abs(rem)) + (rem < 0 ? " bakom" : ""),
+        coord: "59.551" + (10 + (o.at % 80)) + ", 17.540" + (60 + (o.at % 40)) };
+    });
+
+    const mapHazards = h.objects.map((o) => ({ x: o.x, y: o.y, fill: HAZ[o.t].fill }));
+
+    const greenLabels = [["front", "Framkant (Front)"], ["center", "Mitten (Center)"], ["back", "Bakkant (Back)"]];
+    const greenPoints = greenLabels.map(([k, label]) => {
+      const on = s.greenCaptured[k];
+      return {
+        label, dot: on ? "#728157" : "rgba(32,30,29,.22)",
+        coord: on ? "59.5514" + (k === "front" ? "0" : k === "center" ? "6" : "2") + ", 17.5412" + (k === "front" ? "3" : k === "center" ? "9" : "5") : "Ej registrerad",
+        btnLabel: on ? "Uppdatera" : "Registrera",
+        btnStyle: "flex:none;padding:0 16px;height:38px;border-radius:999px;font-size:12.5px;font-weight:700;" +
+          (on ? "border:1px solid rgba(32,30,29,.16);color:#474238;" : "background:#c67139;color:#f5ead8;"),
+        onCapture: () => this.setState((st) => ({ greenCaptured: { ...st.greenCaptured, [k]: !st.greenCaptured[k] } })),
+      };
+    });
+
+    const fairwayOpts = [["left", "Vänster"], ["center", "Träff"], ["right", "Höger"], ["na", "N/A"]].map(([v, label]) => ({
+      label, onPick: () => this.setState({ fairway: v }),
+      style: "flex:1;height:44px;border-radius:999px;font-size:12.5px;font-weight:700;" +
+        (s.fairway === v ? "background:#201e1d;color:#f5ead8;" : "background:#ebddc5;color:#474238;"),
+    }));
+
+    const hazardTypes = Object.keys(HAZ).map((k) => ({
+      label: HAZ[k].label, fill: HAZ[k].fill, onPick: () => this.setState({ hazType: k }),
+      style: "flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px;border-radius:20px;" +
+        (s.hazType === k ? "background:#201e1d;color:#f5ead8;" : "background:#ebddc5;color:#201e1d;"),
+    }));
+
+    const scoreRows = [
+      { label: "Antal slag", value: s.strokes, inc: this.step("strokes", 1, 1, 15), dec: this.step("strokes", -1, 1, 15) },
+      { label: "Puttar", value: s.putts, inc: this.step("putts", 1, 0, 6), dec: this.step("putts", -1, 0, 6) },
+      { label: "Bunkerslag", value: s.bunkerShots, inc: this.step("bunkerShots", 1, 0, 6), dec: this.step("bunkerShots", -1, 0, 6) },
+      { label: "Chippar", value: s.chips, inc: this.step("chips", 1, 0, 6), dec: this.step("chips", -1, 0, 6) },
+    ];
+
+    const R = Component.ROUNDS, round = R[s.roundIdx];
+    const holeChips = round.scores.map((st, i) => {
+      const diff = st - round.pars[i];
+      const bg = diff < 0 ? "#c67139" : diff === 0 ? "#3d4238" : diff === 1 ? "#474238" : "#5a4033";
+      return { no: i + 1, strokes: st, bg, fg: "#f5ead8" };
+    });
+
+    return {
+      isPlay: s.screen === "play", isCourses: s.screen === "courses", isHistory: s.screen === "history",
+      isSettings: s.screen === "settings", isSummary: s.screen === "summary", isEdit: s.screen === "edit",
+
+      holeNo: h.no, par: h.par, hcp: h.hcp, nextHoleNo: Math.min(18, h.no + 1),
+      holeLength: this.fmt(h.length) + " " + (s.unit === "y" ? "yds" : "m"),
+      dCenter: this.fmt(left), dFront: this.fmt(Math.max(0, left - 8)), dBack: this.fmt(left + 9),
+      unitLabel: s.unit === "y" ? "yards" : "meter", unitLong,
+      shotCount: shots.length, shotPoints: pts.join(" "), shotDots, playerX: 150, playerY,
+      lastShotLabel: shots.length ? "Senaste slag " + this.fmt(shots[shots.length - 1].d) + " " + (s.unit === "y" ? "yds" : "m") + " · " + shots.length + " slag på hålet" : "Inga slag registrerade på hålet ännu",
+      hazards, mapHazards, greenPoints, fairwayOpts, hazardTypes, scoreRows, holeChips,
+      toParLabel: "+2 efter 6 hål",
+
+      showScore: s.showScore, showHazard: s.showHazard, hazardName: s.hazName,
+      girHint: s.gir ? "På green i reglementerat antal slag" : "Missad green",
+      girStyle: "width:62px;height:34px;border-radius:999px;padding:3px;display:flex;justify-content:" + (s.gir ? "flex-end" : "flex-start") + ";background:" + (s.gir ? "#728157" : "rgba(32,30,29,.22)") + ";",
+      girKnob: "width:28px;height:28px;border-radius:999px;background:#f9f4ed;display:block;box-shadow:0 1px 2px rgba(46,43,37,.2)",
+
+      nineStyle: seg(s.holesCount === 9), eighteenStyle: seg(s.holesCount === 18),
+      metersStyle: seg(s.unit === "m"), yardsStyle: seg(s.unit === "y"),
+      tabPlay: tabStyle(s.screen === "play"), tabCourses: tabStyle(s.screen === "courses" || s.screen === "edit"),
+      tabHistory: tabStyle(s.screen === "history" || s.screen === "summary"), tabSettings: tabStyle(s.screen === "settings"),
+
+      syncStatus: "Synkad för 2 minuter sedan · 18 banor, 12 rundor",
+      compactPct: (s.syncCount / 5) * 100 + "%",
+      compactLabel: s.syncCount + "/5 till kompaktering",
+
+      courses: [
+        { name: "Bro Hof Slott – Stadium", meta: "18 hål · Par 72 · spelad 3 aug", tag: "Synkad", tagBg: "#e1eecc", tagFg: "#3d472b" },
+        { name: "Ullna Golf Club", meta: "18 hål · Par 71 · spelad 24 juli", tag: "Synkad", tagBg: "#e1eecc", tagFg: "#3d472b" },
+        { name: "Djursholms GK – Lilla", meta: "9 hål · Par 34 · ej spelad", tag: "Lokal", tagBg: "#ffe1d0", tagFg: "#8c491a" },
+      ],
+      rounds: R.map((r, i) => ({ ...r, onOpen: () => this.setState({ roundIdx: i, screen: "summary" }) })),
+      sumCourse: round.course, sumMeta: round.date + " · " + round.holes + " · meter",
+      sumToPar: round.toPar, sumStrokes: round.strokes, sumBreakdown: round.breakdown,
+      stats: [
+        { label: "Snittputtar", value: round.putts }, { label: "Fairwayträff", value: round.fw },
+        { label: "GIR", value: round.gir }, { label: "Bunkerslag", value: round.bunker },
+        { label: "Chippar", value: round.chips }, { label: "Längsta slag", value: round.longest },
+      ],
+
+      prevHole: this.moveHole(-1), nextHole: this.moveHole(1),
+      registerShot: this.registerShot, undoShot: this.undoShot,
+      openHazard: () => this.setState({ showHazard: true }),
+      closeHazard: () => this.setState({ showHazard: false, hazName: "" }),
+      saveHazard: this.saveHazard,
+      setHazardName: (e) => this.setState({ hazName: e.target.value }),
+      endHole: () => this.setState({ showScore: true }),
+      closeScore: () => this.setState({ showScore: false }),
+      saveScore: this.saveScoreAndAdvance,
+      toggleGir: () => this.setState((st) => ({ gir: !st.gir })),
+      toggleUnit: () => this.setState((st) => ({ unit: st.unit === "m" ? "y" : "m" })),
+      setMeters: () => this.setState({ unit: "m" }), setYards: () => this.setState({ unit: "y" }),
+      setNine: () => this.setState({ holesCount: 9 }), setEighteen: () => this.setState({ holesCount: 18 }),
+      parUp: this.editHolePar("par", 1, 3, 6), parDown: this.editHolePar("par", -1, 3, 6),
+      hcpUp: this.editHolePar("hcp", 1, 1, 18), hcpDown: this.editHolePar("hcp", -1, 1, 18),
+      syncNow: () => this.setState((st) => ({ syncCount: (st.syncCount % 5) + 1 })),
+      goPlay: this.go("play"), goCourses: this.go("courses"), goHistory: this.go("history"),
+      goSettings: this.go("settings"), goSummary: this.go("summary"), goEdit: this.go("edit"),
+    };
+  }
+}
+
+</script>
+</body>
+</html>
