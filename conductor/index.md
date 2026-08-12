@@ -14,7 +14,7 @@
 - [General](code_styleguides/general.md)
 
 ## Active Tracks
-- [Initiera Angular PWA & Grundstruktur](tracks/init-angular-pwa/index.md)
+- *(No active tracks)*
 
 ## Completed Tracks
-- *(No completed tracks yet)*
+- [Initiera Angular PWA & Grundstruktur](tracks/init-angular-pwa/index.md)

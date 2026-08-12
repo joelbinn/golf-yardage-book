@@ -1,0 +1,194 @@
+.map-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+.map-container {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background-color: #1a202c;
+}
+
+/* Custom GPS Pulsing Dot */
+::ng-deep .custom-gps-marker {
+  position: relative;
+}
+
+::ng-deep .gps-dot {
+  width: 16px;
+  height: 16px;
+  background-color: #2563eb;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.8);
+  position: absolute;
+  top: 4px;
+  left: 4px;
+}
+
+::ng-deep .gps-pulse-outer {
+  width: 32px;
+  height: 32px;
+  background-color: rgba(37, 99, 235, 0.4);
+  border-radius: 50%;
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  animation: pulse-ring 2s infinite ease-out;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+/* Target Crosshair Marker */
+::ng-deep .custom-target-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+::ng-deep .target-crosshair {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #fbbf24;
+  border-radius: 50%;
+  background-color: rgba(251, 191, 36, 0.3);
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.8);
+  animation: target-bounce 0.4s ease-out;
+}
+
+@keyframes target-bounce {
+  0% { transform: scale(1.6); }
+  100% { transform: scale(1); }
+}
+
+/* Distance Measurement Overlay Card */
+.distance-card {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+  padding: 8px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: #ffffff;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+}
+
+.distance-values {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.primary-dist {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  color: #fbbf24;
+  font-weight: 800;
+}
+
+.primary-dist .value {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.primary-dist .unit {
+  font-size: 0.875rem;
+}
+
+.secondary-dist {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  color: #94a3b8;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.clear-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clear-btn:hover {
+  background: rgba(239, 68, 68, 0.8);
+  color: #ffffff;
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* Map Controls */
+.map-controls {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.control-btn {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #38bdf8;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+}
+
+.control-btn:hover {
+  background: #2563eb;
+  color: #ffffff;
+  transform: scale(1.05);
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.25s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, -10px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}

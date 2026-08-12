@@ -1,0 +1,25 @@
+@import 'leaflet/dist/leaflet.css';
+
+:root {
+  --color-bg: #0f172a;
+  --color-card: #1e293b;
+  --color-primary: #10b981;
+  --color-secondary: #3b82f6;
+  --color-accent: #fbbf24;
+  --color-text: #f8fafc;
+  --color-muted: #94a3b8;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}

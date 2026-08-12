@@ -1,0 +1,39 @@
+<div class="app-layout">
+  <!-- Top Navigation Header -->
+  <header class="app-header">
+    <div class="header-brand">
+      <div class="logo-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2a1 1 0 011 1v1.17l3.83 1.91A1 1 0 0117 7v6a1 1 0 01-.55.89L13 15.64V21a1 1 0 11-2 0V4.17L7.55 2.17A1 1 0 017 1.28V1a1 1 0 011.55-.89L12 2z"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="app-title">Golf Yardage Book</h1>
+        <span class="app-subtitle">GPS Banguide & Scorekort</span>
+      </div>
+    </div>
+
+    <!-- Status Indicators -->
+    <div class="header-status">
+      <div class="status-badge" [class.active]="geo.isTracking()" [title]="geo.trackingError() || 'GPS Aktiv'">
+        <span class="dot"></span>
+        <span>GPS {{ geo.isTracking() ? 'Aktiv' : 'Söker...' }}</span>
+      </div>
+      <div class="status-badge storage" [title]="'Banor: ' + storage.coursesCount() + ' | Rundor: ' + storage.roundsCount()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="mini-icon">
+          <path d="M19.5 21a3 3 0 003-3v-4.5a3 3 0 00-3-3h-15a3 3 0 00-3 3V18a3 3 0 003 3h15zM1.5 6a3 3 0 013-3h15a3 3 0 013 3v2.25a3 3 0 01-3 3h-15a3 3 0 01-3-3V6z"/>
+        </svg>
+        <span>Offline Redo</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace Area -->
+  <main class="main-content">
+    <div class="map-view-wrapper">
+      <app-map></app-map>
+    </div>
+  </main>
+</div>
+
+<router-outlet></router-outlet>
