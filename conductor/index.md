@@ -14,8 +14,8 @@
 - [General](code_styleguides/general.md)
 
 ## Active Tracks
-- [Ban- och Hålhantering](tracks/course-management/index.md)
-
+- *(No active tracks)*
 
 ## Archived Tracks
+- [Ban- och Hålhantering](archive/course-management/index.md)
 - [Initiera Angular PWA & Grundstruktur](archive/init-angular-pwa/index.md)
