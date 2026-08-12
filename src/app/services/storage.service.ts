@@ -59,11 +59,55 @@ export class StorageService {
     try {
       await this.loadCourses();
       await this.loadRounds();
+      await this.seedDefaultCoursesIfEmpty();
       this.isLoaded.set(true);
     } catch (err) {
       console.warn('IndexedDB initialization failed, falling back to LocalStorage', err);
       this.loadFromLocalStorage();
+      await this.seedDefaultCoursesIfEmpty();
       this.isLoaded.set(true);
+    }
+  }
+
+  private async seedDefaultCoursesIfEmpty(): Promise<void> {
+    if (this.courses().length === 0) {
+      const defaultCourse: Course = {
+        id: 'bro-hof-stadium',
+        name: 'Bro Hof Slott – Stadium Course',
+        clubName: 'Bro Hof Slott GC',
+        holesCount: 18,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        holes: Array.from({ length: 18 }, (_, i) => {
+          const pars = [4, 5, 3, 4, 4, 3, 4, 5, 4, 4, 3, 5, 4, 4, 3, 4, 5, 4];
+          const hcp = [7, 3, 15, 1, 11, 17, 5, 9, 13, 8, 16, 2, 10, 4, 18, 6, 12, 14];
+          return {
+            number: i + 1,
+            par: pars[i],
+            handicapIndex: hcp[i],
+            green: {
+              front: { lat: 59.55123 + i * 0.0005, lng: 17.54123 + i * 0.0005 },
+              center: { lat: 59.55140 + i * 0.0005, lng: 17.54140 + i * 0.0005 },
+              back: { lat: 59.55160 + i * 0.0005, lng: 17.54160 + i * 0.0005 }
+            },
+            objects: [
+              {
+                id: `obj-${i}-1`,
+                type: 'bunker',
+                name: 'Fairwaybunker höger',
+                position: { lat: 59.55050 + i * 0.0005, lng: 17.54080 + i * 0.0005 }
+              },
+              {
+                id: `obj-${i}-2`,
+                type: 'water',
+                name: 'Vattenhinder framför green',
+                position: { lat: 59.55110 + i * 0.0005, lng: 17.54110 + i * 0.0005 }
+              }
+            ]
+          };
+        })
+      };
+      await this.saveCourse(defaultCourse);
     }
   }
 

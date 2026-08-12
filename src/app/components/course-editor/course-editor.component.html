@@ -1,0 +1,349 @@
+<div class="editor-container">
+  <div class="editor-header">
+    <h2 class="page-title">{{ isEditMode() ? 'Redigera bana' : 'Registrera bana' }}</h2>
+    <button class="btn-cancel-top" (click)="onCancel()">Avbryt</button>
+  </div>
+
+  <!-- Course Name & Basic Info -->
+  <div class="form-group">
+    <label class="form-label">Bana-namn</label>
+    <input
+      type="text"
+      class="text-input"
+      placeholder="t.ex. Bro Hof Slott – Stadium Course"
+      [ngModel]="name()"
+      (ngModelChange)="name.set($event)"
+    />
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Antal hål</label>
+    <div class="segmented-control">
+      <button
+        type="button"
+        class="segment-btn"
+        [class.active]="holesCount() === 9"
+        (click)="setHolesCount(9)"
+      >
+        9 hål
+      </button>
+      <button
+        type="button"
+        class="segment-btn"
+        [class.active]="holesCount() === 18"
+        (click)="setHolesCount(18)"
+      >
+        18 hål
+      </button>
+    </div>
+  </div>
+
+  <!-- Hole Navigation & Details Card -->
+  @if (currentHole(); as hole) {
+    <div class="hole-editor-card">
+      <div class="hole-nav-bar">
+        <button
+          type="button"
+          class="nav-arrow"
+          [disabled]="currentHoleIndex() === 0"
+          (click)="prevHole()"
+        >
+          ‹
+        </button>
+
+        <div class="hole-info">
+          <div class="hole-title">Hål {{ currentHoleNumber() }}</div>
+          <div class="hole-sub">Par {{ hole.par }} · Index {{ hole.handicapIndex }}</div>
+        </div>
+
+        <button
+          type="button"
+          class="nav-arrow"
+          [disabled]="currentHoleIndex() === holes().length - 1"
+          (click)="nextHole()"
+        >
+          ›
+        </button>
+      </div>
+
+      <div class="hole-adjusters">
+        <div class="adjuster-item">
+          <div class="adjuster-label">Par</div>
+          <div class="adjuster-controls">
+            <button type="button" class="btn-step" (click)="adjustPar(-1)">−</button>
+            <span class="step-value">{{ hole.par }}</span>
+            <button type="button" class="btn-step" (click)="adjustPar(1)">+</button>
+          </div>
+        </div>
+
+        <div class="adjuster-item">
+          <div class="adjuster-label">Index</div>
+          <div class="adjuster-controls">
+            <button type="button" class="btn-step" (click)="adjustHcp(-1)">−</button>
+            <span class="step-value">{{ hole.handicapIndex }}</span>
+            <button type="button" class="btn-step" (click)="adjustHcp(1)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Map Preview Box for Positioning -->
+    <div class="map-section">
+      <div class="map-header">
+        <span class="section-title">Satellitkarta & Positioner</span>
+        <div class="map-header-actions">
+          @if (hasGreenPosition()) {
+            <button
+              type="button"
+              class="btn-center-green"
+              (click)="centerMapOnGreen()"
+              title="Centrera kartan på green"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="8"></circle>
+                <circle cx="12" cy="12" r="2.5"></circle>
+                <line x1="12" y1="2" x2="12" y2="4"></line>
+                <line x1="12" y1="20" x2="12" y2="22"></line>
+                <line x1="2" y1="12" x2="4" y2="12"></line>
+                <line x1="20" y1="12" x2="22" y2="12"></line>
+              </svg>
+              <span>Centrera på green</span>
+            </button>
+          }
+          @if (placementMode()) {
+            <span class="placement-banner">Klicka på kartan för placering</span>
+          }
+        </div>
+      </div>
+
+      <div class="mini-map-wrapper">
+        <app-map
+          [greenPoints]="hole.green"
+          [hazards]="hole.objects"
+          [enableMeasureMode]="!placementMode()"
+          (mapClick)="onMapClick($event)"
+        ></app-map>
+      </div>
+    </div>
+
+    <!-- Green Points Card -->
+    <div class="section-label">Green — tre punkter</div>
+    <div class="green-points-card">
+      <!-- Front Green -->
+      <div class="point-row">
+        <span class="point-dot front"></span>
+        <div class="point-details">
+          <div class="point-name">Framkant (Front)</div>
+          <div class="point-coord">
+            @if (hole.green.front.lat && hole.green.front.lng) {
+              {{ hole.green.front.lat.toFixed(5) }}, {{ hole.green.front.lng.toFixed(5) }}
+            } @else {
+              Ej registrerad
+            }
+          </div>
+        </div>
+        <div class="point-actions">
+          <button
+            type="button"
+            class="btn-point-action"
+            [class.active]="placementMode() === 'front'"
+            (click)="togglePlacementMode('front')"
+          >
+            Karta
+          </button>
+          <button
+            type="button"
+            class="btn-point-action"
+            (click)="setGreenPointFromGPS('front')"
+            title="Sätt från GPS"
+          >
+            GPS
+          </button>
+        </div>
+      </div>
+
+      <!-- Center Green -->
+      <div class="point-row">
+        <span class="point-dot center"></span>
+        <div class="point-details">
+          <div class="point-name">Mitten (Center)</div>
+          <div class="point-coord">
+            @if (hole.green.center.lat && hole.green.center.lng) {
+              {{ hole.green.center.lat.toFixed(5) }}, {{ hole.green.center.lng.toFixed(5) }}
+            } @else {
+              Ej registrerad
+            }
+          </div>
+        </div>
+        <div class="point-actions">
+          <button
+            type="button"
+            class="btn-point-action"
+            [class.active]="placementMode() === 'center'"
+            (click)="togglePlacementMode('center')"
+          >
+            Karta
+          </button>
+          <button
+            type="button"
+            class="btn-point-action"
+            (click)="setGreenPointFromGPS('center')"
+            title="Sätt från GPS"
+          >
+            GPS
+          </button>
+        </div>
+      </div>
+
+      <!-- Back Green -->
+      <div class="point-row">
+        <span class="point-dot back"></span>
+        <div class="point-details">
+          <div class="point-name">Bakkant (Back)</div>
+          <div class="point-coord">
+            @if (hole.green.back.lat && hole.green.back.lng) {
+              {{ hole.green.back.lat.toFixed(5) }}, {{ hole.green.back.lng.toFixed(5) }}
+            } @else {
+              Ej registrerad
+            }
+          </div>
+        </div>
+        <div class="point-actions">
+          <button
+            type="button"
+            class="btn-point-action"
+            [class.active]="placementMode() === 'back'"
+            (click)="togglePlacementMode('back')"
+          >
+            Karta
+          </button>
+          <button
+            type="button"
+            class="btn-point-action"
+            (click)="setGreenPointFromGPS('back')"
+            title="Sätt från GPS"
+          >
+            GPS
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hazards Card -->
+    <div class="section-label">Hinder på hål {{ currentHoleNumber() }}</div>
+    <div class="hazards-list">
+      @for (hazard of hole.objects; track hazard.id) {
+        <div class="hazard-row">
+          <span class="hazard-type-dot" [style.background-color]="getHazardTypeColor(hazard.type)"></span>
+          <div class="hazard-info">
+            <span class="hazard-name">{{ hazard.name }}</span>
+            <span class="hazard-coord">
+              {{ hazard.position.lat.toFixed(5) }}, {{ hazard.position.lng.toFixed(5) }}
+            </span>
+          </div>
+          <button type="button" class="btn-remove-hazard" (click)="deleteHazard(hazard.id)">
+            ✕
+          </button>
+        </div>
+      } @empty {
+        <div class="empty-hazards">Inga hinder tillagda på detta hål ännu.</div>
+      }
+    </div>
+
+    <div class="hazard-actions">
+      <button type="button" class="btn-add-hazard-gps" (click)="openAddHazardModal(true)">
+        + Lägg till hinder på min position
+      </button>
+      <button
+        type="button"
+        class="btn-add-hazard-map"
+        [class.active]="placementMode() === 'hazard'"
+        (click)="openAddHazardModal(false)"
+      >
+        Placera hinder via kartan
+      </button>
+    </div>
+  }
+
+  <!-- Submit / Save Bar -->
+  <div class="submit-bar">
+    <button type="button" class="btn-save-course" (click)="saveCourse()">
+      Spara bana
+    </button>
+  </div>
+
+  <!-- Hazard Add Modal -->
+  @if (showHazardModal()) {
+    <div class="modal-overlay" (click)="closeHazardModal()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-drag-handle"></div>
+        <h3 class="modal-title">Nytt hinder</h3>
+        <p class="modal-subtitle">Positionera hinder för hål {{ currentHoleNumber() }}</p>
+
+        <div class="type-selector">
+          <button
+            type="button"
+            class="type-btn"
+            [class.active]="hazardType() === 'bunker'"
+            (click)="hazardType.set('bunker')"
+          >
+            <span class="type-dot" style="background:#e1cfa8"></span>
+            <span>Bunker</span>
+          </button>
+          <button
+            type="button"
+            class="type-btn"
+            [class.active]="hazardType() === 'water'"
+            (click)="hazardType.set('water')"
+          >
+            <span class="type-dot" style="background:#3c5f6b"></span>
+            <span>Vatten</span>
+          </button>
+          <button
+            type="button"
+            class="type-btn"
+            [class.active]="hazardType() === 'tree'"
+            (click)="hazardType.set('tree')"
+          >
+            <span class="type-dot" style="background:#8fa073"></span>
+            <span>Träd</span>
+          </button>
+          <button
+            type="button"
+            class="type-btn"
+            [class.active]="hazardType() === 'custom'"
+            (click)="hazardType.set('custom')"
+          >
+            <span class="type-dot" style="background:#c67139"></span>
+            <span>Eget</span>
+          </button>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Namn / Beskrivning</label>
+          <input
+            type="text"
+            class="text-input"
+            placeholder="t.ex. Fairwaybunker höger"
+            [ngModel]="hazardName()"
+            (ngModelChange)="hazardName.set($event)"
+          />
+        </div>
+
+        @if (hazardPos(); as pos) {
+          <div class="coords-badge">
+            <span class="gps-dot-small"></span>
+            <span>{{ pos.lat.toFixed(5) }}, {{ pos.lng.toFixed(5) }}</span>
+          </div>
+        }
+
+        <button type="button" class="btn-save-hazard" (click)="saveHazard()">
+          Spara hinder
+        </button>
+        <button type="button" class="btn-modal-cancel" (click)="closeHazardModal()">
+          Avbryt
+        </button>
+      </div>
+    </div>
+  }
+</div>

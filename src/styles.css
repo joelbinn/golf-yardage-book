@@ -1,13 +1,33 @@
 @import 'leaflet/dist/leaflet.css';
 
 :root {
-  --color-bg: #0f172a;
-  --color-card: #1e293b;
-  --color-primary: #10b981;
-  --color-secondary: #3b82f6;
-  --color-accent: #fbbf24;
-  --color-text: #f8fafc;
-  --color-muted: #94a3b8;
+  --font-heading: 'Caprasimo', serif;
+  --font-body: 'Figtree', system-ui, -apple-system, sans-serif;
+
+  --color-bg: #f5ead8;
+  --color-bg-subtle: #f9f4ed;
+  --color-dark: #201e1d;
+  --color-card: #ebddc5;
+  --color-card-hover: #dcd3c4;
+
+  --color-primary: #c67139;
+  --color-primary-hover: #b2622d;
+  --color-primary-active: #8c491a;
+
+  --color-green-accent: #728157;
+  --color-green-light: #e1eecc;
+  --color-green-dark: #3d472b;
+
+  --color-text-dark: #201e1d;
+  --color-text-light: #f5ead8;
+  --color-muted: #645c50;
+  --color-muted-light: #a19786;
+
+  /* Hazards */
+  --hazard-bunker: #e1cfa8;
+  --hazard-water: #3c5f6b;
+  --hazard-tree: #8fa073;
+  --hazard-custom: #c67139;
 }
 
 * {
@@ -17,9 +37,30 @@
 }
 
 body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: var(--font-body);
   background-color: var(--color-bg);
-  color: var(--color-text);
+  color: var(--color-text-dark);
   min-height: 100vh;
   overflow-x: hidden;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: 0;
+  background: none;
+  color: inherit;
+}
+
+a {
+  color: var(--color-primary-active);
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  color: var(--color-primary);
+}
+
+::-webkit-scrollbar {
+  display: none;
 }

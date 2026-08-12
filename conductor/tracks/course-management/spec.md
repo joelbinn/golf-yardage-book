@@ -22,6 +22,7 @@ Implementera komplett gränssnitt och logik för att skapa, redigera, visa och t
    - Välj green-punkt att placera: Front, Center, eller Back.
    - Placera green-punkt genom att klicka/trycka på kartan eller använda knappen "Sätt på nuvarande GPS-position".
    - Visning av befintliga green-markörer med tydlig färg- och ikonindikering på kartan.
+   - **Centrera på green**: När greenposition finns registrerad på det öppna hålet skall en stilren monokrom knapp vara tillgänglig för att centrera kartvyn exakt över greenen. Knappen prioriterar greenens mittposition (Prio 1), därefter framkant (Prio 2) och sist bakkant (Prio 3). Knappen visas endast när giltig greenposition finns.
 
 4. **Hinder- & Objekt-registrering**:
    - Lägga till obegränsat antal hinder per hål (`bunker`, `water`, `tree`, `custom`).
@@ -45,6 +46,7 @@ Implementera komplett gränssnitt och logik för att skapa, redigera, visa och t
 - [ ] Användaren kan skapa en ny bana med namn och 9/18 hål.
 - [ ] Användaren kan ange par och index för samtliga hål.
 - [ ] Användaren kan klicka på kartan eller använda GPS för att positionera Front, Center och Back green-punkter för varje hål.
+- [ ] Knappen för att centrera kartan på green visas när greenposition finns och flyttar kartvy direkt till greenen.
 - [ ] Användaren kan skapa och radera hinder per hål med typ, namn och koordinater.
 - [ ] Alla ändringar sparas och laddas korrekt från `StorageService`.
 - [ ] Bygge (`npm run build`) och tester passerar utan fel.

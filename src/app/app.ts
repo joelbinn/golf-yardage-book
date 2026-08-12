@@ -1,14 +1,14 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
-import { MapComponent } from './components/map/map.component';
 import { StorageService } from './services/storage.service';
 import { GeolocationService } from './services/geolocation.service';
+import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, MapComponent],
+  imports: [CommonModule, RouterOutlet, NavBarComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

@@ -32,6 +32,7 @@ Skapa, redigera och underhålla golfbanor.
 2. **Hålnavigering & Satellitkarta**:
    - Bläddra fritt mellan hål 1–9 eller 1–18.
    - Visar centrerad satellitkarta baserad på nuvarande GPS-position.
+   - **Centrera kartan på green**: När greenposition finns registrerad på det öppna hålet är en knapp tillgänglig för att direkt positionera/centrera satellitkartan över greenen.
 
 3. **Registrering av Positional Data**:
    - **Green-positioner**: Registrera tre specifika GPS-punkter per hål:
