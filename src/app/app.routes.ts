@@ -17,5 +17,15 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./components/course-editor/course-editor.component').then((m) => m.CourseEditorComponent)
   },
+  {
+    path: 'play',
+    loadComponent: () =>
+      import('./components/play-round/play-round.component').then((m) => m.PlayRoundComponent)
+  },
+  {
+    path: 'play/:roundId',
+    loadComponent: () =>
+      import('./components/play-round/play-round.component').then((m) => m.PlayRoundComponent)
+  },
   { path: '**', redirectTo: 'courses' }
 ];

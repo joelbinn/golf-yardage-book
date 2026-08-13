@@ -174,7 +174,35 @@ export class StorageService {
     this.saveToLocalStorage('courses', updatedList);
   }
 
-  // --- Round Operations ---
+  readonly activeRound = computed(() => this.rounds().find((r) => r.status === 'in_progress'));
+
+  async startRound(course: Course, startHole: number = 1): Promise<Round> {
+    const now = new Date().toISOString();
+    const newRound: Round = {
+      id: `round-${Date.now()}`,
+      courseId: course.id,
+      courseName: course.name,
+      date: now,
+      unit: 'meters',
+      currentHole: startHole,
+      scores: course.holes.map((h) => ({
+        holeNumber: h.number,
+        par: h.par,
+        strokes: 0,
+        putts: 0,
+        gir: false,
+        bunkerShots: 0,
+        chips: 0
+      })),
+      shots: [],
+      status: 'in_progress',
+      createdAt: now,
+      updatedAt: now
+    };
+
+    await this.saveRound(newRound);
+    return newRound;
+  }
 
   async loadRounds(): Promise<Round[]> {
     try {

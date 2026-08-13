@@ -1,6 +1,7 @@
 import { LatLng } from './geo.model';
 
 export type FairwayHit = 'left' | 'center' | 'right' | 'na';
+export type DistanceUnit = 'meters' | 'yards';
 
 export interface Score {
   holeNumber: number;
@@ -42,6 +43,8 @@ export interface Round {
   courseId: string;
   courseName: string;
   date: string;
+  unit: DistanceUnit;
+  currentHole: number;
   scores: Score[];
   shots: Shot[];
   stats?: RoundStats;

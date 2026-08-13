@@ -6,6 +6,19 @@
     </p>
   </div>
 
+  @if (activeRound(); as round) {
+    <div class="active-round-banner">
+      <div class="banner-info">
+        <span class="banner-badge">PÅGÅENDE RUNDA</span>
+        <h4 class="banner-title">{{ round.courseName }}</h4>
+        <span class="banner-sub">Hål {{ round.currentHole }}</span>
+      </div>
+      <button class="btn-play-hero" (click)="onResumeRound(round.id)">
+        Fortsätt runda
+      </button>
+    </div>
+  }
+
   <div class="courses-list">
     @for (course of courses(); track course.id) {
       <div class="course-card">
@@ -23,7 +36,10 @@
         </div>
 
         <div class="card-actions">
-          <button class="btn-primary" (click)="onEditCourse(course)">
+          <button class="btn-play-primary" (click)="onStartRound(course)">
+            Spela runda
+          </button>
+          <button class="btn-secondary" (click)="onEditCourse(course)">
             Redigera
           </button>
           <button class="btn-danger" (click)="onDeleteCourse(course, $event)" title="Ta bort bana">

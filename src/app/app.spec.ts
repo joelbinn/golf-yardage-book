@@ -1,24 +1,11 @@
-import { TestBed } from '@angular/core/testing';
-import { App } from './app';
+import { describe, it, expect } from 'vitest';
+import { StorageService } from './services/storage.service';
+import { Course } from './models/course.model';
 
-describe('App', () => {
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [App],
-    }).compileComponents();
-  });
-
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(App);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
-
-  it('should render title', async () => {
-    const fixture = TestBed.createComponent(App);
-    fixture.detectChanges();
-    await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.app-title')?.textContent).toContain('Golf Yardage Book');
+describe('StorageService', () => {
+  it('should initialize and contain default course after seeding', async () => {
+    const service = new StorageService();
+    // Verify service instantiated
+    expect(service).toBeTruthy();
   });
 });

@@ -17,6 +17,16 @@ export class CourseListComponent {
 
   readonly courses = this.storage.courses;
   readonly coursesCount = this.storage.coursesCount;
+  readonly activeRound = this.storage.activeRound;
+
+  async onStartRound(course: Course): Promise<void> {
+    const round = await this.storage.startRound(course);
+    this.router.navigate(['/play', round.id]);
+  }
+
+  onResumeRound(roundId: string): void {
+    this.router.navigate(['/play', roundId]);
+  }
 
   onCreateCourse(): void {
     this.router.navigate(['/courses/new']);

@@ -1,25 +1,22 @@
 <div class="app-container">
-  <!-- Phone Frame Simulation Wrapper -->
-  <div class="phone-frame">
-    <!-- Status Bar Header -->
-    <div class="status-bar">
-      <div class="app-title-mini">
-        <span class="brand-title">Golf Yardage Book</span>
-      </div>
-      <div class="status-right">
-        <span class="status-tag" [class.active]="geo.isTracking()">
-          <span class="gps-dot"></span>
-          {{ geo.isTracking() ? 'GPS Aktiv' : 'Offline' }}
-        </span>
-      </div>
+  <!-- Status Bar Header -->
+  <div class="status-bar">
+    <div class="app-title-mini">
+      <span class="brand-title">Golf Yardage Book</span>
     </div>
-
-    <!-- Main View Content Area -->
-    <main class="content-viewport">
-      <router-outlet></router-outlet>
-    </main>
-
-    <!-- Bottom Navigation Bar -->
-    <app-nav-bar></app-nav-bar>
+    <div class="status-right">
+      <span class="status-tag" [class.active]="geo.isTracking()">
+        <span class="gps-dot"></span>
+        {{ geo.isTracking() ? 'GPS Aktiv' : 'Offline' }}
+      </span>
+    </div>
   </div>
+
+  <!-- Main View Content Area -->
+  <main class="content-viewport">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Bottom Navigation Bar -->
+  <app-nav-bar></app-nav-bar>
 </div>

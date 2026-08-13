@@ -1,0 +1,169 @@
+<div class="play-round-container">
+  <!-- Top Header Section -->
+  <header class="round-header">
+    <div class="header-left">
+      <a routerLink="/courses" class="back-link" title="Gå tillbaka">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </a>
+      <div>
+        <h1 class="course-title">{{ course()?.name || 'Spela runda' }}</h1>
+        <div class="hole-subtitle">
+          Hål {{ currentHoleNumber() }} · Par {{ currentHole()?.par || 4 }} · HCP {{ currentHole()?.handicapIndex || 1 }}
+        </div>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <!-- Unit Toggle Button -->
+      <button class="unit-toggle-btn" (click)="toggleUnit()" title="Växla enhet">
+        <span [class.active-unit]="unit() === 'meters'">M</span>
+        <span class="unit-divider">|</span>
+        <span [class.active-unit]="unit() === 'yards'">YD</span>
+      </button>
+
+      <!-- GPS Indicator -->
+      <div class="gps-badge" [ngClass]="gpsQualityClass()" [title]="'GPS-noggrannhet: ' + gpsAccuracyText()">
+        <span class="gps-dot"></span>
+        <span class="gps-text">{{ gpsAccuracyText() }}</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Green Distances Hero Card -->
+  <div class="distances-card">
+    <div class="dist-column side-dist">
+      <span class="dist-label">FRAM</span>
+      <span class="dist-value">{{ displayFront() !== null ? displayFront() : '---' }}</span>
+    </div>
+
+    <div class="dist-column center-dist">
+      <span class="dist-label">MITTEN</span>
+      <span class="dist-value-large">{{ displayCenter() !== null ? displayCenter() : '---' }}</span>
+      <span class="dist-unit">{{ unit() === 'yards' ? 'yd' : 'm' }}</span>
+    </div>
+
+    <div class="dist-column side-dist">
+      <span class="dist-label">BAK</span>
+      <span class="dist-value">{{ displayBack() !== null ? displayBack() : '---' }}</span>
+    </div>
+  </div>
+
+  <!-- Map Section with Overlay Floating Buttons -->
+  <div class="map-wrapper">
+    <div #mapContainer class="leaflet-map-container"></div>
+
+    <!-- Floating Map Controls -->
+    <div class="map-overlay-controls">
+      <button class="map-fab" (click)="centerOnPlayer()" title="Centrera på min position">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <circle cx="12" cy="12" r="3" fill="currentColor"></circle>
+        </svg>
+      </button>
+
+      <button class="map-fab" (click)="centerOnGreen()" title="Centrera på green">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="7"></circle>
+          <path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path>
+        </svg>
+      </button>
+
+      @if (measurePoint()) {
+        <button class="map-fab fab-clear" (click)="clearMeasure()" title="Rensa mätning">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      }
+    </div>
+
+    @if (measurePoint()) {
+      <div class="measure-banner">
+        <span>Mätt avstånd: <strong>{{ formatDistance(measurePoint()!.distanceMeters) }} {{ unit() === 'yards' ? 'yd' : 'm' }}</strong></span>
+        <button class="btn-text-sm" (click)="clearMeasure()">Rensa</button>
+      </div>
+    }
+  </div>
+
+  <!-- Hazards Section -->
+  <div class="hazards-section">
+    <div class="hazards-header">
+      <h3 class="hazards-title">Hinder på hålet</h3>
+      <button class="btn-add-hazard-sm" (click)="openAddHazardModal()">+ Registrera hinder</button>
+    </div>
+    @if (hazardDistances().length > 0) {
+      <div class="hazards-grid">
+        @for (item of hazardDistances(); track item.object.id) {
+          <div class="hazard-card">
+            <div class="hazard-info">
+              <span class="hazard-type-badge" [ngClass]="item.object.type">
+                {{ item.object.type === 'bunker' ? 'Bunker' : (item.object.type === 'water' ? 'Vatten' : 'Träd') }}
+              </span>
+              <span class="hazard-name">{{ item.object.name }}</span>
+            </div>
+            <div class="hazard-dist">
+              <span class="dist-num">{{ item.displayDistance }}</span>
+              <span class="dist-unit-sm">{{ unit() === 'yards' ? 'yd' : 'm' }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="no-hazards-text">Inga hinder registrerade på detta hål ännu.</div>
+    }
+  </div>
+
+  <!-- Hole Navigation Footer Bar -->
+  <footer class="hole-nav-footer">
+    <button class="nav-hole-btn" [disabled]="currentHoleNumber() <= 1" (click)="prevHole()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+      <span>Föreg.</span>
+    </button>
+
+    <div class="hole-indicator-pill">
+      Hål {{ currentHoleNumber() }} av {{ course()?.holesCount || 18 }}
+    </div>
+
+    <button class="nav-hole-btn" [disabled]="currentHoleNumber() >= (course()?.holesCount || 18)" (click)="nextHole()">
+      <span>Nästa</span>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </button>
+  </footer>
+
+  <!-- Snabbregistrera Hinder Modal -->
+  @if (isAddHazardModalOpen()) {
+    <div class="modal-backdrop" (click)="closeAddHazardModal()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <h3 class="modal-title">Snabbregistrera Hinder</h3>
+        <p class="modal-subtitle">Positionen sätts till {{ measurePoint() ? 'klickad kartpunkt' : 'din nuvarande GPS-position' }}.</p>
+
+        <div class="form-group">
+          <label class="form-label">Hindertyp</label>
+          <div class="type-selector">
+            <button class="type-chip" [class.selected]="newHazardType() === 'bunker'" (click)="onHazardTypeChange('bunker')">Bunker</button>
+            <button class="type-chip" [class.selected]="newHazardType() === 'water'" (click)="onHazardTypeChange('water')">Vatten</button>
+            <button class="type-chip" [class.selected]="newHazardType() === 'tree'" (click)="onHazardTypeChange('tree')">Träd</button>
+            <button class="type-chip" [class.selected]="newHazardType() === 'custom'" (click)="onHazardTypeChange('custom')">Annat</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Namn / Beskrivning</label>
+          <input type="text" class="form-input" [value]="newHazardName()" (input)="onHazardNameChange($event)" placeholder="Ex. Fairwaybunker höger" />
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-cancel" (click)="closeAddHazardModal()">Avbryt</button>
+          <button class="btn-save" (click)="saveNewHazard()">Spara hinder</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
