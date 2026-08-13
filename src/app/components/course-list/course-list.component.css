@@ -215,3 +215,17 @@
 .btn-create-dashed:hover {
   background: rgba(198, 113, 57, 0.1);
 }
+
+@media (min-width: 768px) {
+  .courses-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 32px 48px;
+  }
+
+  .courses-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+  }
+}

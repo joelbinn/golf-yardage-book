@@ -567,3 +567,58 @@
   padding: 8px 20px;
   cursor: pointer;
 }
+
+/* Responsive Desktop Layout */
+.play-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+@media (min-width: 768px) {
+  .play-round-container {
+    max-width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .play-layout {
+    flex-direction: row;
+    height: 100%;
+    width: 100%;
+  }
+
+  .play-sidebar {
+    width: 380px;
+    flex: none;
+    height: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid rgba(32, 30, 29, 0.1);
+    background: #f5ead8;
+    box-sizing: border-box;
+  }
+
+  .play-main-canvas {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background: #201e1d;
+  }
+
+  .play-main-canvas .map-wrapper {
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    height: 100%;
+    flex: 1;
+  }
+
+  .hole-nav-footer {
+    padding-bottom: 16px;
+    margin-top: auto;
+  }
+}
