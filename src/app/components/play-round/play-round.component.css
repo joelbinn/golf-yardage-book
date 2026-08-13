@@ -174,20 +174,28 @@
   font-weight: 600;
 }
 
-/* Map Section */
+.play-map-canvas {
+  width: 100%;
+  height: 280px;
+  min-height: 280px;
+  position: relative;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
 .map-wrapper {
   position: relative;
-  flex: 1;
-  margin: 6px 16px;
+  width: 100%;
+  height: 100%;
   border-radius: 18px;
   overflow: hidden;
   border: 2px solid #ebddc5;
-  min-height: 240px;
 }
 
 .leaflet-map-container {
   width: 100%;
   height: 100%;
+  min-height: 100%;
 }
 
 .map-overlay-controls {
@@ -198,6 +206,65 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+/* Responsive Desktop Layout */
+.play-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+@media (min-width: 768px) {
+  .play-round-container {
+    max-width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .play-layout {
+    flex-direction: row;
+    height: 100%;
+    width: 100%;
+  }
+
+  .play-sidebar {
+    width: 380px;
+    flex: none;
+    height: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid rgba(32, 30, 29, 0.1);
+    background: #f5ead8;
+    box-sizing: border-box;
+  }
+
+  .play-map-canvas {
+    flex: 1;
+    height: 100%;
+    min-height: 100%;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background: #201e1d;
+  }
+
+  .play-map-canvas .map-wrapper {
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    height: 100%;
+    width: 100%;
+    flex: 1;
+  }
+
+  .hole-nav-footer {
+    padding-bottom: 16px;
+    margin-top: auto;
+  }
 }
 
 .map-fab {
@@ -566,59 +633,4 @@
   font-size: 0.9rem;
   padding: 8px 20px;
   cursor: pointer;
-}
-
-/* Responsive Desktop Layout */
-.play-layout {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-@media (min-width: 768px) {
-  .play-round-container {
-    max-width: 100%;
-    height: 100%;
-    overflow: hidden;
-  }
-
-  .play-layout {
-    flex-direction: row;
-    height: 100%;
-    width: 100%;
-  }
-
-  .play-sidebar {
-    width: 380px;
-    flex: none;
-    height: 100%;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    border-right: 1px solid rgba(32, 30, 29, 0.1);
-    background: #f5ead8;
-    box-sizing: border-box;
-  }
-
-  .play-main-canvas {
-    flex: 1;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    background: #201e1d;
-  }
-
-  .play-main-canvas .map-wrapper {
-    margin: 0;
-    border: none;
-    border-radius: 0;
-    height: 100%;
-    flex: 1;
-  }
-
-  .hole-nav-footer {
-    padding-bottom: 16px;
-    margin-top: auto;
-  }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed, ElementRef, ViewChild, AfterViewInit, effect } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed, ElementRef, ViewChild, AfterViewInit, effect, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { StorageService } from '../../services/storage.service';
@@ -29,6 +29,13 @@ export class PlayRoundComponent implements OnInit, OnDestroy, AfterViewInit {
   readonly geoService = inject(GeolocationService);
 
   @ViewChild('mapContainer') mapContainer!: ElementRef<HTMLDivElement>;
+
+  @HostListener('window:resize')
+  onResize(): void {
+    if (this.map) {
+      this.map.invalidateSize();
+    }
+  }
 
   // Signal State
   readonly round = signal<Round | null>(null);
