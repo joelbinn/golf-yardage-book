@@ -1,6 +1,6 @@
 .app-container {
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
   max-width: 600px;
   width: 100%;
   margin: 0 auto;
@@ -9,6 +9,7 @@
   background: var(--color-bg, #f5ead8);
   position: relative;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 @media (min-width: 768px) {
@@ -17,6 +18,10 @@
     height: 100vh;
     height: 100dvh;
     overflow: hidden;
+  }
+
+  .content-viewport {
+    padding-bottom: 0;
   }
 }
 

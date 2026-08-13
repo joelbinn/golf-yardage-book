@@ -300,4 +300,17 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
       }, 30);
     }
   }
+
+  centerOnGreen(): void {
+    const green = this.greenPoints;
+    const target = green?.center?.lat ? green.center : (green?.front?.lat ? green.front : green?.back);
+    if (target?.lat && target?.lng) {
+      this.centerOnLocation(target as LatLng, 18);
+    }
+  }
+
+  hasGreenPosition(): boolean {
+    const green = this.greenPoints;
+    return !!(green?.center?.lat || green?.front?.lat || green?.back?.lat);
+  }
 }

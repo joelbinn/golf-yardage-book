@@ -9,6 +9,8 @@ import { LatLng } from '../../models/geo.model';
 
 import * as L from 'leaflet';
 
+import { MapComponent } from '../map/map.component';
+
 export interface HazardDistance {
   object: CourseObject;
   distance: number; // in meters
@@ -18,11 +20,11 @@ export interface HazardDistance {
 @Component({
   selector: 'app-play-round',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, MapComponent],
   templateUrl: './play-round.component.html',
   styleUrl: './play-round.component.css'
 })
-export class PlayRoundComponent implements OnInit, OnDestroy, AfterViewInit {
+export class PlayRoundComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   readonly storage = inject(StorageService);
@@ -222,18 +224,20 @@ export class PlayRoundComponent implements OnInit, OnDestroy, AfterViewInit {
     this.map = L.map(this.mapContainer.nativeElement, {
       zoomControl: false,
       attributionControl: false
-    }).setView(initialCenter, 17);
+    }).setView(initialCenter, 16);
 
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
       maxZoom: 19
     }).addTo(this.map);
 
-    // Invalidate size to ensure Leaflet renders correctly inside container
-    setTimeout(() => {
-      if (this.map) {
-        this.map.invalidateSize();
-      }
-    }, 100);
+    // Invalidate size multiple times to ensure Leaflet calculates correct canvas size after paint
+    [50, 200, 500].forEach((delay) => {
+      setTimeout(() => {
+        if (this.map) {
+          this.map.invalidateSize();
+        }
+      }, delay);
+    });
 
     // Map click for Touch to Measure
     this.map.on('click', (e: any) => {
@@ -261,7 +265,7 @@ export class PlayRoundComponent implements OnInit, OnDestroy, AfterViewInit {
 
   centerOnPlayer(): void {
     const pos = this.userPos();
-    if (pos && this.map) {
+    if (pos && pos.lat && pos.lng && this.map) {
       this.map.setView([pos.lat, pos.lng], 18);
     }
   }
@@ -269,17 +273,23 @@ export class PlayRoundComponent implements OnInit, OnDestroy, AfterViewInit {
   centerOnGreen(): void {
     const green = this.currentHole()?.green;
     const target = green?.center?.lat ? green.center : (green?.front?.lat ? green.front : green?.back);
-    if (target?.lat && this.map) {
+    if (target?.lat && target?.lng && this.map) {
       this.map.setView([target.lat, target.lng], 18);
     }
   }
 
   private centerMapOnGreenOrPlayer(): void {
     const green = this.currentHole()?.green;
-    if (green?.center?.lat) {
+    const target = green?.center?.lat ? green.center : (green?.front?.lat ? green.front : green?.back);
+    if (target?.lat && target?.lng && this.map) {
       this.centerOnGreen();
     } else {
-      this.centerOnPlayer();
+      const pos = this.userPos();
+      if (pos && pos.lat && pos.lng && this.map) {
+        this.centerOnPlayer();
+      } else if (this.map) {
+        this.map.setView([59.55140, 17.54140], 16);
+      }
     }
   }
 

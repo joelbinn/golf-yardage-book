@@ -25,6 +25,15 @@
 
   <!-- Map Action Controls Overlay -->
   <div class="map-controls">
+    @if (hasGreenPosition()) {
+      <button class="control-btn green-btn" (click)="centerOnGreen()" title="Centrera på green">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="icon">
+          <circle cx="12" cy="12" r="7"></circle>
+          <path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path>
+        </svg>
+      </button>
+    }
+
     <button class="control-btn gps-btn" (click)="centerOnUser()" title="Centrera på min GPS">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="icon">
         <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
