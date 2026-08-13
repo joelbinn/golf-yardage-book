@@ -14,7 +14,7 @@
 - [General](code_styleguides/general.md)
 
 ## Active Tracks
-- *(No active tracks)*
+- [Spela Runda – Live GPS & Avståndsmätning](tracks/play-round-gps/index.md)
 
 ## Archived Tracks
 - [Ban- och Hålhantering](archive/course-management/index.md)
