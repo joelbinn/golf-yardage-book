@@ -39,7 +39,7 @@ testem.log
 /typings
 __screenshots__/
 slask/
-
+!conductor/
 # System files
 .DS_Store
 Thumbs.db

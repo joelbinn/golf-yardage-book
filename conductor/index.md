@@ -13,10 +13,14 @@
 - [HTML & CSS](code_styleguides/html-css.md)
 - [General](code_styleguides/general.md)
 
+## Planned Tracks
+- [Inställningar, Backup & GitHub-synk](tracks/settings_sync_20260814)
+
 ## Active Tracks
-- [Digitalt Scorekort & Rundhistorik](tracks/scorecard_history_20260814/index.md)
+None.
 
 ## Archived Tracks
+- [Digitalt Scorekort & Rundhistorik](tracks/scorecard_history_20260814/index.md)
 - [Spela Runda – Live GPS & Avståndsmätning](archive/play-round-gps/index.md)
 - [Ban- och Hålhantering](archive/course-management/index.md)
 - [Initiera Angular PWA & Grundstruktur](archive/init-angular-pwa/index.md)
