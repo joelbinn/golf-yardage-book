@@ -14,8 +14,9 @@
 - [General](code_styleguides/general.md)
 
 ## Active Tracks
-- [Spela Runda – Live GPS & Avståndsmätning](tracks/play-round-gps/index.md)
+- [Digitalt Scorekort & Rundhistorik](tracks/scorecard_history_20260814/index.md)
 
 ## Archived Tracks
+- [Spela Runda – Live GPS & Avståndsmätning](tracks/play-round-gps/index.md)
 - [Ban- och Hålhantering](archive/course-management/index.md)
 - [Initiera Angular PWA & Grundstruktur](archive/init-angular-pwa/index.md)
