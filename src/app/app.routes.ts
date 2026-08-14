@@ -32,5 +32,10 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./components/round-history/round-history.component').then((m) => m.RoundHistoryComponent)
   },
+  {
+    path: 'settings',
+    loadComponent: () =>
+      import('./components/settings/settings.component').then((m) => m.SettingsComponent)
+  },
   { path: '**', redirectTo: 'courses' }
 ];

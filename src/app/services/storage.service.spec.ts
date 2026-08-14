@@ -68,4 +68,55 @@ describe('StorageService - Round Stats & Complete Round', () => {
     expect(completed.stats?.totalScore).toBe(4);
     expect(completed.stats?.scoreDiff).toBe(0);
   });
+
+  it('should export backup data as JSON string', async () => {
+    const jsonStr = await service.exportBackupData();
+    expect(jsonStr).toBeTypeOf('string');
+    const parsed = JSON.parse(jsonStr);
+    expect(parsed.version).toBe(1);
+    expect(parsed.exportDate).toBeDefined();
+    expect(Array.isArray(parsed.courses)).toBe(true);
+    expect(Array.isArray(parsed.rounds)).toBe(true);
+  });
+
+  it('should import backup data from JSON string', async () => {
+    const backupObj = {
+      version: 1,
+      exportDate: new Date().toISOString(),
+      courses: [
+        {
+          id: 'imported-course-1',
+          name: 'Imported GC',
+          clubName: 'Imported Golf Club',
+          holesCount: 9,
+          holes: [],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+      ],
+      rounds: [
+        {
+          id: 'imported-round-1',
+          courseId: 'imported-course-1',
+          courseName: 'Imported GC',
+          date: new Date().toISOString(),
+          unit: 'meters',
+          currentHole: 1,
+          scores: [],
+          shots: [],
+          status: 'completed',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+      ]
+    };
+
+    const result = await service.importBackupData(JSON.stringify(backupObj));
+    expect(result.coursesCount).toBe(1);
+    expect(result.roundsCount).toBe(1);
+  });
+
+  it('should throw error when importing invalid JSON string', async () => {
+    await expect(service.importBackupData('invalid json')).rejects.toThrow();
+  });
 });

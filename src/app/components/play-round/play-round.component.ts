@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { StorageService } from '../../services/storage.service';
 import { GeolocationService } from '../../services/geolocation.service';
+import { SettingsService } from '../../services/settings.service';
 import { Course, Hole, CourseObject, ObjectType } from '../../models/course.model';
 import { Round, DistanceUnit, Score, FairwayHit } from '../../models/round.model';
 import { LatLng } from '../../models/geo.model';
@@ -29,6 +30,7 @@ export class PlayRoundComponent implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   readonly storage = inject(StorageService);
   readonly geoService = inject(GeolocationService);
+  readonly settingsService = inject(SettingsService);
 
   @ViewChild('mapContainer') mapContainer!: ElementRef<HTMLDivElement>;
 
@@ -43,7 +45,7 @@ export class PlayRoundComponent implements OnInit, OnDestroy {
   readonly round = signal<Round | null>(null);
   readonly course = signal<Course | null>(null);
   readonly currentHoleNumber = signal<number>(1);
-  readonly unit = signal<DistanceUnit>('meters');
+  readonly unit = computed<DistanceUnit>(() => this.settingsService.unit() === 'y' ? 'yards' : 'meters');
   readonly measurePoint = signal<{ position: LatLng; distanceMeters: number } | null>(null);
 
   // Add Hazard Modal State
@@ -272,7 +274,9 @@ export class PlayRoundComponent implements OnInit, OnDestroy {
       const r = await this.storage.getRound(roundId);
       if (r) {
         this.round.set(r);
-        this.unit.set(r.unit || 'meters');
+        if (r.unit) {
+          this.settingsService.setUnit(r.unit === 'yards' ? 'y' : 'm');
+        }
         this.currentHoleNumber.set(r.currentHole || 1);
         const c = await this.storage.getCourse(r.courseId);
         if (c) this.course.set(c);
@@ -302,11 +306,11 @@ export class PlayRoundComponent implements OnInit, OnDestroy {
 
   // --- Unit Toggle ---
   toggleUnit(): void {
-    const newUnit: DistanceUnit = this.unit() === 'meters' ? 'yards' : 'meters';
-    this.unit.set(newUnit);
+    const next = this.settingsService.unit() === 'm' ? 'y' : 'm';
+    this.settingsService.setUnit(next);
     const r = this.round();
     if (r) {
-      r.unit = newUnit;
+      r.unit = next === 'y' ? 'yards' : 'meters';
       this.storage.saveRound(r);
     }
   }

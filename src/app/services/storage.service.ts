@@ -382,4 +382,60 @@ export class StorageService {
     this.courses.set(courses);
     this.rounds.set(rounds);
   }
+
+  // --- Backup Export & Import ---
+
+  async exportBackupData(): Promise<string> {
+    const courses = this.courses();
+    const rounds = this.rounds();
+
+    const backupObj = {
+      version: 1,
+      exportDate: new Date().toISOString(),
+      courses,
+      rounds
+    };
+
+    return JSON.stringify(backupObj, null, 2);
+  }
+
+  async importBackupData(jsonString: string): Promise<{ coursesCount: number; roundsCount: number }> {
+    let parsed: any;
+    try {
+      parsed = JSON.parse(jsonString);
+    } catch {
+      throw new Error('Filen innehåller inte giltigt JSON-format.');
+    }
+
+    if (!parsed || (typeof parsed !== 'object')) {
+      throw new Error('Ogiltig struktur i backup-filen.');
+    }
+
+    const coursesToImport: Course[] = Array.isArray(parsed.courses) ? parsed.courses : [];
+    const roundsToImport: Round[] = Array.isArray(parsed.rounds) ? parsed.rounds : [];
+
+    if (coursesToImport.length === 0 && roundsToImport.length === 0) {
+      throw new Error('Ingen giltig data (banor eller rundor) hittades i backup-filen.');
+    }
+
+    for (const course of coursesToImport) {
+      if (course && course.id && course.name) {
+        await this.saveCourse(course);
+      }
+    }
+
+    for (const round of roundsToImport) {
+      if (round && round.id && round.courseId) {
+        await this.saveRound(round);
+      }
+    }
+
+    await this.loadCourses();
+    await this.loadRounds();
+
+    return {
+      coursesCount: coursesToImport.length,
+      roundsCount: roundsToImport.length
+    };
+  }
 }
