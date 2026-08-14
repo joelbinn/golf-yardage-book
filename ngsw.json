@@ -1,0 +1,114 @@
+{
+  "configVersion": 1,
+  "timestamp": 1786738586842,
+  "index": "/golf-yardage-book/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/golf-yardage-book/chunk-B4A33OsE.js",
+        "/golf-yardage-book/chunk-BDRUXvhQ.js",
+        "/golf-yardage-book/chunk-CHDsBqLS.js",
+        "/golf-yardage-book/chunk-CkxX5978.js",
+        "/golf-yardage-book/chunk-D8kyj8YQ.js",
+        "/golf-yardage-book/chunk-DF9eXUIJ.js",
+        "/golf-yardage-book/chunk-DdHcDFMb.js",
+        "/golf-yardage-book/chunk-h4VjEG05.js",
+        "/golf-yardage-book/favicon.ico",
+        "/golf-yardage-book/index.html",
+        "/golf-yardage-book/main-UF32QJCF.js",
+        "/golf-yardage-book/manifest.webmanifest",
+        "/golf-yardage-book/styles-IN56UJWH.css"
+      ],
+      "patterns": []
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/golf-yardage-book/icons/icon-128x128.png",
+        "/golf-yardage-book/icons/icon-144x144.png",
+        "/golf-yardage-book/icons/icon-152x152.png",
+        "/golf-yardage-book/icons/icon-192x192.png",
+        "/golf-yardage-book/icons/icon-384x384.png",
+        "/golf-yardage-book/icons/icon-512x512.png",
+        "/golf-yardage-book/icons/icon-72x72.png",
+        "/golf-yardage-book/icons/icon-96x96.png",
+        "/golf-yardage-book/media/layers-2x-TBM42ERR.png",
+        "/golf-yardage-book/media/layers-55W3Q4RM.png",
+        "/golf-yardage-book/media/marker-icon-2V3QKKVC.png"
+      ],
+      "patterns": []
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "esri-map-tiles",
+      "patterns": [
+        "https:\\/\\/server\\.arcgisonline\\.com\\/ArcGIS\\/rest\\/services\\/World_Imagery\\/MapServer\\/tile\\/.*"
+      ],
+      "strategy": "performance",
+      "maxSize": 2000,
+      "maxAge": 2592000000,
+      "timeoutMs": 5000,
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "version": 1
+    }
+  ],
+  "hashTable": {
+    "/golf-yardage-book/chunk-B4A33OsE.js": "a7d822b5a06ff0c46f37b1f0f816ba926f19657d",
+    "/golf-yardage-book/chunk-BDRUXvhQ.js": "299fc842f2aab9c985aaa70727c5ca380341582b",
+    "/golf-yardage-book/chunk-CHDsBqLS.js": "a81c1d2bd0d11ef8b3960b60d14c9a1398ed9055",
+    "/golf-yardage-book/chunk-CkxX5978.js": "1dccd1bfc4730fd2045d623596ec8efb58989c0b",
+    "/golf-yardage-book/chunk-D8kyj8YQ.js": "55a60f58a2d225092aca2ed9a789c56411d14cad",
+    "/golf-yardage-book/chunk-DF9eXUIJ.js": "f7be8139ed3fa7f6155bc11d2f08b4e088c276f8",
+    "/golf-yardage-book/chunk-DdHcDFMb.js": "50c0d257f550d69ec4b2fbf918f02dd6011399d2",
+    "/golf-yardage-book/chunk-h4VjEG05.js": "2a12c147d04bc423aeff82189dddf8e4e25a99e5",
+    "/golf-yardage-book/favicon.ico": "9c39f434fe1261f68c5e3eefdf734630d99c5670",
+    "/golf-yardage-book/icons/icon-128x128.png": "f912963bdc6d5a38d8f1dd0afbaab2ce8d657acb",
+    "/golf-yardage-book/icons/icon-144x144.png": "b155fd5f2fd5d2ea7760721063003c4cd95fd783",
+    "/golf-yardage-book/icons/icon-152x152.png": "eae6e0f0c8afb8aaae339e2a569b43e9238e5e6c",
+    "/golf-yardage-book/icons/icon-192x192.png": "15c4180454633880d98674aa7394656196c91584",
+    "/golf-yardage-book/icons/icon-384x384.png": "94a915751ef6c9282df9aea405ad679230631814",
+    "/golf-yardage-book/icons/icon-512x512.png": "1de182f76f7329dfa8f9fcdd1fdcdd695bea6a99",
+    "/golf-yardage-book/icons/icon-72x72.png": "aa88a6096bd973be7f6d7a5489bfa6bc2463f8c4",
+    "/golf-yardage-book/icons/icon-96x96.png": "7fb8f59c30ce2ff12c700321a0b39e14b3dc8f95",
+    "/golf-yardage-book/index.html": "976d418b0caccd73f9b71a29e0c01dff7d2ca4bf",
+    "/golf-yardage-book/main-UF32QJCF.js": "3b6e87f075ee629147782aaf74493698cf554016",
+    "/golf-yardage-book/manifest.webmanifest": "f80f1be02d5165a12fb00e03bb6f604bf8814303",
+    "/golf-yardage-book/media/layers-2x-TBM42ERR.png": "152a162333e46d24f9d89f566312fc0c64011dee",
+    "/golf-yardage-book/media/layers-55W3Q4RM.png": "c9e7528e491a39232ba24a2706c6c739d6fb0f06",
+    "/golf-yardage-book/media/marker-icon-2V3QKKVC.png": "60a90bcbb2b42b7ddb4556db94eb7c1084b0e5da",
+    "/golf-yardage-book/styles-IN56UJWH.css": "8229104560f6741dfdda4c945a12973e41ce449b"
+  },
+  "navigationUrls": [
+    {
+      "positive": true,
+      "regex": "^\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*\\.[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$"
+    }
+  ],
+  "navigationRequestStrategy": "performance"
+}
