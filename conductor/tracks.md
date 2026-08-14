@@ -1,8 +1,8 @@
 # Tracks Registry
 
 ---
-- [ ] **Track: Digitalt Scorekort & Rundhistorik**
-  *Link: [tracks/scorecard_history_20260814/index.md](tracks/scorecard_history_20260814/index.md)*
+- [x] **Track: Digitalt Scorekort & Rundhistorik**
+  *Link: [archive/scorecard_history_20260814/index.md](archive/scorecard_history_20260814/index.md)*
 - [x] **Track: Spela Runda – Live GPS & Avståndsmätning**
   *Link: [archive/play-round-gps/index.md](archive/play-round-gps/index.md)*
 - [x] **Track: Ban- och Hålhantering**

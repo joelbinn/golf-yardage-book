@@ -1,6 +1,6 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { Course } from '../models/course.model';
-import { Round } from '../models/round.model';
+import { Round, RoundStats } from '../models/round.model';
 
 const DB_NAME = 'GolfYardageBookDB';
 const DB_VERSION = 1;
@@ -263,6 +263,56 @@ export class StorageService {
     const updatedList = this.rounds().filter((r) => r.id !== id);
     this.rounds.set(updatedList);
     this.saveToLocalStorage('rounds', updatedList);
+  }
+
+  calculateRoundStats(round: Round): RoundStats {
+    const playedScores = round.scores.filter((s) => s.strokes > 0);
+    const totalScore = playedScores.reduce((sum, s) => sum + s.strokes, 0);
+    const totalPar = playedScores.reduce((sum, s) => sum + s.par, 0);
+    const scoreDiff = totalScore - totalPar;
+    const totalPutts = playedScores.reduce((sum, s) => sum + s.putts, 0);
+
+    const fairwayScores = playedScores.filter((s) => s.par > 3 && s.fairwayHit && s.fairwayHit !== 'na');
+    const fairwaysHitCount = fairwayScores.filter((s) => s.fairwayHit === 'center').length;
+    const fairwaysTotal = fairwayScores.length;
+    const fairwayPercentage = fairwaysTotal > 0 ? Math.round((fairwaysHitCount / fairwaysTotal) * 100) : 0;
+
+    const girCount = playedScores.filter((s) => {
+      const isGirAuto = s.strokes - s.putts <= s.par - 2;
+      return s.gir !== undefined && s.gir !== null ? (s.gir || isGirAuto) : isGirAuto;
+    }).length;
+    const girPercentage = playedScores.length > 0 ? Math.round((girCount / playedScores.length) * 100) : 0;
+
+    const totalBunkerShots = playedScores.reduce((sum, s) => sum + (s.bunkerShots || 0), 0);
+    const totalChips = playedScores.reduce((sum, s) => sum + (s.chips || 0), 0);
+
+    return {
+      totalScore,
+      totalPar,
+      scoreDiff,
+      totalPutts,
+      fairwaysHitCount,
+      fairwaysTotal,
+      fairwayPercentage,
+      girCount,
+      girPercentage,
+      totalBunkerShots,
+      totalChips
+    };
+  }
+
+  async completeRound(roundId: string): Promise<Round> {
+    const round = await this.getRound(roundId);
+    if (!round) {
+      throw new Error(`Round with ID ${roundId} not found`);
+    }
+
+    round.stats = this.calculateRoundStats(round);
+    round.status = 'completed';
+    round.updatedAt = new Date().toISOString();
+
+    await this.saveRound(round);
+    return round;
   }
 
   // --- Helper IDB Methods ---

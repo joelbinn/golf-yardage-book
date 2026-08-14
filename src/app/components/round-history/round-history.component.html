@@ -1,0 +1,176 @@
+<div class="history-container">
+  <!-- Header -->
+  <header class="history-header">
+    <div>
+      <h1 class="page-title">Rundhistorik</h1>
+      <p class="page-subtitle">Alla dina sparade och spelade golfrundor</p>
+    </div>
+  </header>
+
+  <!-- Rounds List -->
+  <main class="history-content">
+    @if (storage.rounds().length > 0) {
+      <div class="rounds-grid">
+        @for (round of storage.rounds(); track round.id) {
+          <div class="round-card" (click)="openScorecard(round)">
+            <div class="round-card-header">
+              <div>
+                <h3 class="course-name">{{ round.courseName }}</h3>
+                <span class="round-date">{{ formatDate(round.date) }}</span>
+              </div>
+              <span class="status-badge" [class.completed]="round.status === 'completed'" [class.in-progress]="round.status === 'in_progress'">
+                {{ round.status === 'completed' ? 'Slutförd' : 'Pågår' }}
+              </span>
+            </div>
+
+            <!-- Stats Summary -->
+            <div class="round-stats-row">
+              <div class="stat-pill score-pill">
+                <span class="stat-label">RESULTAT</span>
+                <span class="stat-val">
+                  {{ formatScoreDiff(round.stats?.scoreDiff) }}
+                  @if (round.stats?.totalScore) {
+                    <small>({{ round.stats?.totalScore }})</small>
+                  }
+                </span>
+              </div>
+
+              <div class="stat-pill">
+                <span class="stat-label">PUTTAR</span>
+                <span class="stat-val">{{ round.stats?.totalPutts ?? getTotalPutts(round) }}</span>
+              </div>
+
+              <div class="stat-pill">
+                <span class="stat-label">GIR</span>
+                <span class="stat-val">{{ round.stats?.girPercentage ?? 0 }}%</span>
+              </div>
+
+              <div class="stat-pill">
+                <span class="stat-label">FIR</span>
+                <span class="stat-val">{{ round.stats?.fairwayPercentage ?? 0 }}%</span>
+              </div>
+            </div>
+
+            <!-- Card Actions -->
+            <div class="round-card-actions">
+              @if (round.status === 'in_progress') {
+                <button class="btn-resume" (click)="$event.stopPropagation(); resumeRound(round)">
+                  Fortsätt runda
+                </button>
+              }
+              <button class="btn-view-card" (click)="$event.stopPropagation(); openScorecard(round)">
+                Scorekort
+              </button>
+              <button class="btn-delete" (click)="deleteRound($event, round.id)" title="Radera runda">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="empty-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        <h3>Inga sparade rundor ännu</h3>
+        <p>Starta din första runda under fliken "Banor" eller "Spela".</p>
+        <a routerLink="/courses" class="btn-primary">Visa banor</a>
+      </div>
+    }
+  </main>
+
+  <!-- Full Scorecard Modal -->
+  @if (selectedRound()) {
+    <div class="modal-backdrop" (click)="closeScorecard()">
+      <div class="scorecard-modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div>
+            <h2 class="modal-course-name">{{ selectedRound()?.courseName }}</h2>
+            <span class="modal-date">{{ formatDate(selectedRound()?.date || '') }}</span>
+          </div>
+          <button class="btn-close-modal" (click)="closeScorecard()">×</button>
+        </div>
+
+        <div class="scorecard-modal-body">
+          <table class="scorecard-table">
+            <thead>
+              <tr>
+                <th>Hål</th>
+                <th>Par</th>
+                <th>Slag</th>
+                <th>Puttar</th>
+                <th>Fairway</th>
+                <th>GIR</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (score of selectedRound()?.scores; track score.holeNumber) {
+                <tr [class.par-row]="score.strokes > 0 && score.strokes === score.par"
+                    [class.birdie-row]="score.strokes > 0 && score.strokes < score.par"
+                    [class.bogey-row]="score.strokes > 0 && score.strokes > score.par">
+                  <td class="hole-cell">Hål {{ score.holeNumber }}</td>
+                  <td>{{ score.par }}</td>
+                  <td class="strokes-cell">{{ score.strokes > 0 ? score.strokes : '-' }}</td>
+                  <td>{{ score.strokes > 0 ? score.putts : '-' }}</td>
+                  <td>
+                    @if (score.par > 3 && score.fairwayHit) {
+                      <span class="fw-badge" [ngClass]="score.fairwayHit">
+                        {{ score.fairwayHit === 'center' ? 'Träff' : (score.fairwayHit === 'left' ? 'Vänster' : (score.fairwayHit === 'right' ? 'Höger' : 'N/A')) }}
+                      </span>
+                    } @else {
+                      -
+                    }
+                  </td>
+                  <td>{{ score.gir ? '✓' : '-' }}</td>
+                </tr>
+
+                <!-- Front 9 summary row -->
+                @if (score.holeNumber === 9 && (selectedRound()?.scores?.length || 0) >= 9) {
+                  <tr class="summary-subtotal-row">
+                    <td>UT (1-9)</td>
+                    <td>{{ getFrontNinePar(selectedRound()!) }}</td>
+                    <td>{{ getFrontNineStrokes(selectedRound()!) }}</td>
+                    <td colspan="3"></td>
+                  </tr>
+                }
+
+                <!-- Back 9 summary row -->
+                @if (score.holeNumber === 18) {
+                  <tr class="summary-subtotal-row">
+                    <td>IN (10-18)</td>
+                    <td>{{ getBackNinePar(selectedRound()!) }}</td>
+                    <td>{{ getBackNineStrokes(selectedRound()!) }}</td>
+                    <td colspan="3"></td>
+                  </tr>
+                }
+              }
+            </tbody>
+            <tfoot>
+              <tr class="total-row">
+                <td>TOTALT</td>
+                <td>{{ getTotalPar(selectedRound()!) }}</td>
+                <td>{{ getTotalStrokes(selectedRound()!) }}</td>
+                <td>{{ getTotalPutts(selectedRound()!) }}</td>
+                <td colspan="2">
+                  Resultat: {{ formatScoreDiff(selectedRound()?.stats?.scoreDiff) }}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-close-lg" (click)="closeScorecard()">Stäng</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

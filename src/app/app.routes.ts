@@ -27,5 +27,10 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./components/play-round/play-round.component').then((m) => m.PlayRoundComponent)
   },
+  {
+    path: 'history',
+    loadComponent: () =>
+      import('./components/round-history/round-history.component').then((m) => m.RoundHistoryComponent)
+  },
   { path: '**', redirectTo: 'courses' }
 ];

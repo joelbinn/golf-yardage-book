@@ -4,7 +4,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { StorageService } from '../../services/storage.service';
 import { GeolocationService } from '../../services/geolocation.service';
 import { Course, Hole, CourseObject, ObjectType } from '../../models/course.model';
-import { Round, DistanceUnit } from '../../models/round.model';
+import { Round, DistanceUnit, Score, FairwayHit } from '../../models/round.model';
 import { LatLng } from '../../models/geo.model';
 
 import * as L from 'leaflet';
@@ -96,6 +96,128 @@ export class PlayRoundComponent implements OnInit, OnDestroy {
     if (acc === null) return 'Söker GPS...';
     return `±${Math.round(acc)}m`;
   });
+
+  readonly currentScore = computed<Score | undefined>(() => {
+    const r = this.round();
+    const hNum = this.currentHoleNumber();
+    return r?.scores.find((s) => s.holeNumber === hNum);
+  });
+
+  readonly relativeScoreText = computed<string>(() => {
+    const r = this.round();
+    if (!r) return 'E';
+    const played = r.scores.filter((s) => s.strokes > 0);
+    if (played.length === 0) return 'E';
+    const totalStrokes = played.reduce((sum, s) => sum + s.strokes, 0);
+    const totalPar = played.reduce((sum, s) => sum + s.par, 0);
+    const diff = totalStrokes - totalPar;
+    if (diff === 0) return 'E';
+    return diff > 0 ? `+${diff}` : `${diff}`;
+  });
+
+  updateStrokes(delta: number): void {
+    const r = this.round();
+    const hNum = this.currentHoleNumber();
+    if (!r) return;
+
+    let score = r.scores.find((s) => s.holeNumber === hNum);
+    const par = this.currentHole()?.par || 4;
+
+    if (!score) {
+      score = {
+        holeNumber: hNum,
+        par,
+        strokes: 0,
+        putts: 0,
+        gir: false,
+        bunkerShots: 0,
+        chips: 0
+      };
+      r.scores.push(score);
+    }
+
+    let newStrokes = score.strokes + delta;
+    if (newStrokes < 0) newStrokes = 0;
+
+    score.strokes = newStrokes;
+    score.par = par;
+    if (newStrokes > 0 && score.putts === 0) {
+      score.putts = Math.min(2, newStrokes);
+    }
+    if (score.putts > newStrokes) {
+      score.putts = newStrokes;
+    }
+    score.gir = newStrokes > 0 && (newStrokes - score.putts <= par - 2);
+
+    this.round.set({ ...r });
+    this.storage.saveRound(r);
+  }
+
+  updatePutts(delta: number): void {
+    const r = this.round();
+    const hNum = this.currentHoleNumber();
+    if (!r) return;
+
+    let score = r.scores.find((s) => s.holeNumber === hNum);
+    const par = this.currentHole()?.par || 4;
+
+    if (!score) {
+      score = {
+        holeNumber: hNum,
+        par,
+        strokes: 0,
+        putts: 0,
+        gir: false,
+        bunkerShots: 0,
+        chips: 0
+      };
+      r.scores.push(score);
+    }
+
+    let newPutts = score.putts + delta;
+    if (newPutts < 0) newPutts = 0;
+    if (score.strokes > 0 && newPutts > score.strokes) newPutts = score.strokes;
+
+    score.putts = newPutts;
+    score.gir = score.strokes > 0 && (score.strokes - newPutts <= par - 2);
+
+    this.round.set({ ...r });
+    this.storage.saveRound(r);
+  }
+
+  setFairwayHit(hit: FairwayHit): void {
+    const r = this.round();
+    const hNum = this.currentHoleNumber();
+    if (!r) return;
+
+    let score = r.scores.find((s) => s.holeNumber === hNum);
+    if (!score) {
+      score = {
+        holeNumber: hNum,
+        par: this.currentHole()?.par || 4,
+        strokes: 0,
+        putts: 0,
+        gir: false,
+        bunkerShots: 0,
+        chips: 0
+      };
+      r.scores.push(score);
+    }
+
+    score.fairwayHit = hit;
+    this.round.set({ ...r });
+    this.storage.saveRound(r);
+  }
+
+  async finishRound(): Promise<void> {
+    const r = this.round();
+    if (!r) return;
+
+    if (confirm('Vill du avsluta och spara rundan?')) {
+      await this.storage.completeRound(r.id);
+      this.router.navigate(['/history']);
+    }
+  }
 
   // Distances calculations (in meters)
   readonly distanceFrontMeters = computed<number | null>(() => {

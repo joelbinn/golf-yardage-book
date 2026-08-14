@@ -17,6 +17,12 @@
       </div>
 
       <div class="header-right">
+        <!-- Relative Score Badge -->
+        <div class="score-badge" title="Ställning vs Par">
+          <span class="score-badge-label">SCORE</span>
+          <span class="score-badge-val">{{ relativeScoreText() }}</span>
+        </div>
+
         <!-- Unit Toggle Button -->
         <button class="unit-toggle-btn" (click)="toggleUnit()" title="Växla enhet">
           <span [class.active-unit]="unit() === 'meters'">M</span>
@@ -58,6 +64,76 @@
         [hazards]="currentHole()?.objects"
         [enableMeasureMode]="true"
       ></app-map>
+    </div>
+
+    <!-- Score Card Entry Widget -->
+    <div class="scorecard-entry-card">
+      <div class="scorecard-entry-header">
+        <div class="score-hole-info">
+          <span class="score-title">Scorekort Hål {{ currentHoleNumber() }}</span>
+          <span class="score-par-badge">Par {{ currentHole()?.par || 4 }}</span>
+        </div>
+        <button class="btn-finish-round" (click)="finishRound()">Avsluta runda</button>
+      </div>
+
+      <div class="score-controls-grid">
+        <!-- Slag / Strokes Stepper -->
+        <div class="score-control-box">
+          <span class="control-label">Slag</span>
+          <div class="stepper-row">
+            <button class="stepper-btn" (click)="updateStrokes(-1)">-</button>
+            <span class="stepper-val">{{ currentScore()?.strokes || 0 }}</span>
+            <button class="stepper-btn" (click)="updateStrokes(1)">+</button>
+          </div>
+        </div>
+
+        <!-- Puttar / Putts Stepper -->
+        <div class="score-control-box">
+          <span class="control-label">Puttar</span>
+          <div class="stepper-row">
+            <button class="stepper-btn" (click)="updatePutts(-1)">-</button>
+            <span class="stepper-val">{{ currentScore()?.putts || 0 }}</span>
+            <button class="stepper-btn" (click)="updatePutts(1)">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fairway Hit Selection (Par 4 & Par 5) -->
+      @if ((currentHole()?.par || 4) > 3) {
+        <div class="fairway-selector-box">
+          <span class="control-label">Fairwayträff</span>
+          <div class="fairway-chips">
+            <button
+              class="fairway-chip"
+              [class.active]="currentScore()?.fairwayHit === 'left'"
+              (click)="setFairwayHit('left')"
+            >
+              Vänster
+            </button>
+            <button
+              class="fairway-chip"
+              [class.active]="currentScore()?.fairwayHit === 'center'"
+              (click)="setFairwayHit('center')"
+            >
+              Träff
+            </button>
+            <button
+              class="fairway-chip"
+              [class.active]="currentScore()?.fairwayHit === 'right'"
+              (click)="setFairwayHit('right')"
+            >
+              Höger
+            </button>
+            <button
+              class="fairway-chip"
+              [class.active]="currentScore()?.fairwayHit === 'na'"
+              (click)="setFairwayHit('na')"
+            >
+              N/A
+            </button>
+          </div>
+        </div>
+      }
     </div>
 
     <!-- Hazards Section -->
