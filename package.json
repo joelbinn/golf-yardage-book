@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "deploy-to-github-pages": "npx ng build --configuration production --base-href /golf-yardage-book/ && npx angular-cli-ghpages --dir=dist/golf-yardage-book/browser",
+    "deploy-to-github-pages": "npx ng build --configuration production --base-href /golf-yardage-book/ && npx angular-cli-ghpages --dir=dist/golf-yardage-book/browser --use-ssh",
     "deploy": "npm run deploy-to-github-pages"
   },
   "private": true,
