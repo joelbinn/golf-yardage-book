@@ -1,5 +1,8 @@
 # Tracks Registry
 
+- [x] **Track: GPS Slagspårning & Slagkedja på Kartan**
+  *Link: [archive/shot_tracking_20260814/index.md](archive/shot_tracking_20260814/index.md)*
+
 ---
 - [x] **Track: Inställningar, Backup & GitHub-synk**
   *Link: [archive/settings_sync_20260814/index.md](archive/settings_sync_20260814/index.md)*

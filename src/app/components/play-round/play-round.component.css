@@ -718,3 +718,81 @@
   color: #fff;
   border-color: #201e1d;
 }
+
+/* Shot Tracking Quick Action Bar */
+.shot-tracking-bar {
+  display: flex;
+  gap: 8px;
+  margin: 6px 0 10px 0;
+}
+
+.btn-register-shot {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: none;
+  background: #22c55e;
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(34, 197, 94, 0.3);
+  transition: transform 0.1s ease, background 0.15s ease;
+}
+
+.btn-register-shot:hover {
+  background: #16a34a;
+  transform: translateY(-1px);
+}
+
+.btn-undo-shot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(32, 30, 29, 0.2);
+  background: #fff;
+  color: #201e1d;
+  font-weight: 700;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-undo-shot:hover {
+  background: #f8f4ed;
+}
+
+/* Club Grid in Modal */
+.club-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 12px 0 16px 0;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.club-chip {
+  padding: 10px 6px;
+  border-radius: 10px;
+  border: 1px solid rgba(32, 30, 29, 0.15);
+  background: #fff;
+  color: #201e1d;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease;
+}
+
+.club-chip:hover {
+  background: #201e1d;
+  color: #fffdf9;
+}

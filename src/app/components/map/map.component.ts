@@ -17,6 +17,7 @@ import { CommonModule } from '@angular/common';
 import * as L from 'leaflet';
 import { LatLng } from '../../models/geo.model';
 import { CourseObject, Green } from '../../models/course.model';
+import { Shot } from '../../models/round.model';
 import { GeolocationService } from '../../services/geolocation.service';
 
 const ESRI_WORLD_IMAGERY =
@@ -45,6 +46,8 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() initialZoom = 17;
   @Input() greenPoints?: Partial<Green>;
   @Input() hazards?: CourseObject[];
+  @Input() shots?: Shot[];
+  @Input() unitLabel: 'm' | 'yd' = 'm';
   @Input() enableMeasureMode = true;
 
   @Output() mapClick = new EventEmitter<LatLng>();
@@ -58,6 +61,8 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
   private measureLine: L.Polyline | null = null;
   private greenMarkers: L.Marker[] = [];
   private hazardMarkers: L.Marker[] = [];
+  private shotMarkers: L.Marker[] = [];
+  private shotLines: L.Polyline[] = [];
 
   readonly measuredDistanceMeters = signal<number | null>(null);
   readonly measuredDistanceYards = signal<number | null>(null);
@@ -84,6 +89,9 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
       }
       if (changes['hazards']) {
         this.renderHazardMarkers();
+      }
+      if (changes['shots']) {
+        this.renderShotChain();
       }
     }
   }
@@ -122,6 +130,53 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
     this.renderGreenMarkers();
     this.renderHazardMarkers();
+    this.renderShotChain();
+  }
+
+  private renderShotChain(): void {
+    if (!this.map) return;
+    this.shotMarkers.forEach((m) => m.remove());
+    this.shotMarkers = [];
+    this.shotLines.forEach((l) => l.remove());
+    this.shotLines = [];
+
+    if (!this.shots || this.shots.length === 0) return;
+
+    this.shots.forEach((shot, index) => {
+      if (shot.startPosition && shot.endPosition) {
+        const polyline = L.polyline(
+          [
+            [shot.startPosition.lat, shot.startPosition.lng],
+            [shot.endPosition.lat, shot.endPosition.lng]
+          ],
+          {
+            color: '#22c55e',
+            weight: 3,
+            dashArray: '5, 5',
+            opacity: 0.95
+          }
+        ).addTo(this.map!);
+        this.shotLines.push(polyline);
+
+        const distDisplay = this.unitLabel === 'yd'
+          ? Math.round(shot.distanceMeters * 1.09361)
+          : Math.round(shot.distanceMeters);
+
+        const labelText = shot.club
+          ? `S${index + 1} (${shot.club}: ${distDisplay}${this.unitLabel})`
+          : `S${index + 1}: ${distDisplay}${this.unitLabel}`;
+
+        const icon = L.divIcon({
+          className: 'shot-marker-badge',
+          html: `<div style="background:#201e1d;color:#fffdf9;padding:2px 6px;border-radius:10px;font-size:10px;font-weight:bold;border:1.5px solid #22c55e;white-space:nowrap;box-shadow:0 2px 4px rgba(0,0,0,0.4)">${labelText}</div>`,
+          iconSize: [60, 20],
+          iconAnchor: [30, 10]
+        });
+
+        const marker = L.marker([shot.endPosition.lat, shot.endPosition.lng], { icon }).addTo(this.map!);
+        this.shotMarkers.push(marker);
+      }
+    });
   }
 
   private updateUserPositionOnMap(pos: { lat: number; lng: number; accuracy: number }): void {

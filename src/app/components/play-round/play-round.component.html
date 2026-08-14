@@ -62,8 +62,31 @@
       <app-map
         [greenPoints]="currentHole()?.green"
         [hazards]="currentHole()?.objects"
+        [shots]="currentHoleShots()"
+        [unitLabel]="settingsService.getUnitLabel() === 'yd' ? 'yd' : 'm'"
         [enableMeasureMode]="true"
       ></app-map>
+    </div>
+
+    <!-- Shot Tracking Quick Action Bar -->
+    <div class="shot-tracking-bar">
+      <button class="btn-register-shot" (click)="openRegisterShotModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"></circle>
+          <circle cx="12" cy="12" r="3" fill="currentColor"></circle>
+        </svg>
+        <span>Registrera Slag {{ currentHoleShots().length + 1 }}</span>
+      </button>
+
+      @if (currentHoleShots().length > 0) {
+        <button class="btn-undo-shot" (click)="undoLastShot()" title="Ångra senaste slag">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="1 4 1 10 7 10"></polyline>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+          </svg>
+          <span>Ångra</span>
+        </button>
+      }
     </div>
 
     <!-- Score Card Entry Widget -->
@@ -211,6 +234,29 @@
         <div class="modal-actions">
           <button class="btn-cancel" (click)="closeAddHazardModal()">Avbryt</button>
           <button class="btn-save" (click)="saveNewHazard()">Spara hinder</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Välj Klubba Modal för Slagregistrering -->
+  @if (isClubModalOpen()) {
+    <div class="modal-backdrop" (click)="closeClubModal()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <h3 class="modal-title">Registrera Slag {{ currentHoleShots().length + 1 }}</h3>
+        <p class="modal-subtitle">Välj vilken klubba du slog med (eller registrera utan klubba):</p>
+
+        <div class="club-grid">
+          @for (club of availableClubs; track club) {
+            <button class="club-chip" (click)="registerShot(club)">
+              {{ club }}
+            </button>
+          }
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-cancel" (click)="closeClubModal()">Avbryt</button>
+          <button class="btn-save" (click)="registerShot()">Spara utan klubba</button>
         </div>
       </div>
     </div>

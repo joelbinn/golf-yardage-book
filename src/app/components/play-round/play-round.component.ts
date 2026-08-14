@@ -5,7 +5,7 @@ import { StorageService } from '../../services/storage.service';
 import { GeolocationService } from '../../services/geolocation.service';
 import { SettingsService } from '../../services/settings.service';
 import { Course, Hole, CourseObject, ObjectType } from '../../models/course.model';
-import { Round, DistanceUnit, Score, FairwayHit } from '../../models/round.model';
+import { Round, DistanceUnit, Score, FairwayHit, Shot } from '../../models/round.model';
 import { LatLng } from '../../models/geo.model';
 
 import * as L from 'leaflet';
@@ -52,6 +52,14 @@ export class PlayRoundComponent implements OnInit, OnDestroy {
   readonly isAddHazardModalOpen = signal<boolean>(false);
   readonly newHazardType = signal<ObjectType>('bunker');
   readonly newHazardName = signal<string>('');
+
+  // Shot Tracking State & Modal
+  readonly isClubModalOpen = signal<boolean>(false);
+  readonly availableClubs: string[] = [
+    'Driver', '3W', '5W', 'Hybrid',
+    'Järn 4', 'Järn 5', 'Järn 6', 'Järn 7', 'Järn 8', 'Järn 9',
+    'PW', 'GW', 'SW', 'LW', 'Putter'
+  ];
 
   // Map instance reference
   private map: any = null;
@@ -116,6 +124,78 @@ export class PlayRoundComponent implements OnInit, OnDestroy {
     if (diff === 0) return 'E';
     return diff > 0 ? `+${diff}` : `${diff}`;
   });
+
+  readonly currentHoleShots = computed<Shot[]>(() => {
+    const r = this.round();
+    const hNum = this.currentHoleNumber();
+    if (!r || !r.shots) return [];
+    return r.shots.filter((s) => s.holeNumber === hNum);
+  });
+
+  // --- Shot Tracking Methods ---
+
+  openRegisterShotModal(): void {
+    this.isClubModalOpen.set(true);
+  }
+
+  closeClubModal(): void {
+    this.isClubModalOpen.set(false);
+  }
+
+  registerShot(club?: string): void {
+    const r = this.round();
+    const pos = this.userPos() || this.measurePoint()?.position;
+    if (!r || !pos) {
+      alert('Hittade ingen GPS-position för att registrera slag. Slå på GPS eller klicka på kartan.');
+      return;
+    }
+
+    const holeShots = this.currentHoleShots();
+    let startPos: LatLng;
+
+    if (holeShots.length > 0) {
+      startPos = holeShots[holeShots.length - 1].endPosition;
+    } else {
+      const g = this.currentHole()?.green;
+      startPos = g?.front?.lat ? g.front : pos;
+    }
+
+    const distMeters = this.calculateDistance(startPos, pos);
+
+    const newShot: Shot = {
+      id: `shot-${Date.now()}`,
+      holeNumber: this.currentHoleNumber(),
+      startPosition: startPos,
+      endPosition: pos,
+      distanceMeters: distMeters,
+      club: club || undefined,
+      timestamp: new Date().toISOString()
+    };
+
+    if (!r.shots) r.shots = [];
+    r.shots.push(newShot);
+
+    this.updateStrokes(1);
+    this.round.set({ ...r });
+    this.storage.saveRound(r);
+    this.closeClubModal();
+  }
+
+  undoLastShot(): void {
+    const r = this.round();
+    const hNum = this.currentHoleNumber();
+    if (!r || !r.shots) return;
+
+    const holeShots = r.shots.filter((s) => s.holeNumber === hNum);
+    if (holeShots.length === 0) return;
+
+    const lastShot = holeShots[holeShots.length - 1];
+    r.shots = r.shots.filter((s) => s.id !== lastShot.id);
+
+    this.updateStrokes(-1);
+    this.round.set({ ...r });
+    this.storage.saveRound(r);
+  }
 
   updateStrokes(delta: number): void {
     const r = this.round();
