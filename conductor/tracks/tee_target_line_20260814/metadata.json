@@ -3,6 +3,6 @@
   "type": "feature",
   "status": "new",
   "created_at": "2026-08-15T12:01:00Z",
-  "updated_at": "2026-08-15T12:01:00Z",
-  "description": "Stöd för flera namngivna Tee-positioner och tänkt spellinje (waypoints/doglegs) på kartan"
+  "updated_at": "2026-08-15T12:04:00Z",
+  "description": "Tee-positioner, tänkt spellinje samt hålvridning i spelläget (Green högst upp, Tee längst ner)"
 }

@@ -1,4 +1,4 @@
-# Implementation Plan: Tee-positioner & Tänkt Spellinje
+# Implementation Plan: Tee-positioner, Tänkt Spellinje & Hålvridning (Green Högst Upp)
 
 ---
 
@@ -11,17 +11,24 @@
 
 ---
 
-## Phase 2: Kartvisualisering & Spelläge
-- [ ] Task: Uppdatera `MapComponent` för Tees & Spellinje
+## Phase 2: Kartvisualisering & Hålvridning i MapComponent
+- [ ] Task: Uppdatera `MapComponent` för Tees, Spellinje & Hålvridning
   - [ ] Lägg till `@Input() tees` och `@Input() targetLine`.
+  - [ ] Implementera bärningsberäkning (bearing) från Tee till Green center.
+  - [ ] Implementera kartrotation för Hålinriktad vy (Tee längst ned, Green högst upp) med motroterade horisontella badges.
   - [ ] Rendera streckade linjer med Leaflet och distans-badges för delavstånd.
-- [ ] Task: Integrera i `PlayRoundComponent`
-  - [ ] Skicka tees och spellinje till kartan i spelläget.
 
 ---
 
-## Phase 3: Enhetstester & Verifiering
+## Phase 3: Spelläge & Orienteringsväxlare
+- [ ] Task: Integrera i `PlayRoundComponent`
+  - [ ] Skicka tees, spellinje och orienteringsläge till kartan i spelläget.
+  - [ ] Lägg till kompassknapp på kartan för att växla mellan "Hålinriktad (Tee ➔ Green)" och "Norr Upp".
+
+---
+
+## Phase 4: Enhetstester & Verifiering
 - [ ] Task: Bygge och tester
-  - [ ] Uppdatera enhetstester för modeller och kartredigering.
+  - [ ] Skriv enhetstester för bärningsberäkning och modeller.
   - [ ] Verifiera ren kompilering med `npm run build`.
   - [ ] Verifiera med `npx vitest run`.
