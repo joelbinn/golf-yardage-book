@@ -15,10 +15,22 @@ import { DistanceUnitType, GithubConfig } from '../../models/settings.model';
   styleUrl: './settings.component.css'
 })
 export class SettingsComponent implements OnInit {
-  readonly settingsService = inject(SettingsService);
-  readonly geoService = inject(GeolocationService);
-  readonly storageService = inject(StorageService);
-  readonly githubSyncService = inject(GithubSyncService);
+  readonly settingsService: SettingsService;
+  readonly geoService: GeolocationService;
+  readonly storageService: StorageService;
+  readonly githubSyncService: GithubSyncService;
+
+  constructor(
+    settingsService?: SettingsService,
+    geoService?: GeolocationService,
+    storageService?: StorageService,
+    githubSyncService?: GithubSyncService
+  ) {
+    this.settingsService = settingsService ?? inject(SettingsService);
+    this.geoService = geoService ?? inject(GeolocationService);
+    this.storageService = storageService ?? inject(StorageService);
+    this.githubSyncService = githubSyncService ?? inject(GithubSyncService);
+  }
 
   // Form State for GitHub
   readonly owner = signal<string>('');
@@ -56,6 +68,10 @@ export class SettingsComponent implements OnInit {
     return `±${Math.round(acc * 10) / 10} m`;
   });
 
+  // Version & Git SHA Signals
+  readonly versionInfo = signal<{ hash: string; shortHash: string; date: string; time?: string; dateTime?: string } | null>(null);
+  readonly isCopied = signal<boolean>(false);
+
   ngOnInit(): void {
     this.geoService.startTracking();
 
@@ -64,6 +80,35 @@ export class SettingsComponent implements OnInit {
     this.repo.set(cfg.repo || '');
     this.token.set(cfg.token || '');
     this.branch.set(cfg.branch || 'main');
+
+    this.loadVersionInfo();
+  }
+
+  private async loadVersionInfo(): Promise<void> {
+    try {
+      const res = await fetch('version.json');
+      if (res.ok) {
+        const data = await res.json();
+        this.versionInfo.set(data);
+      }
+    } catch {
+      // Fallback
+    }
+  }
+
+  async copyGitSha(): Promise<void> {
+    const info = this.versionInfo();
+    if (!info || !info.hash) return;
+
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(info.hash);
+        this.isCopied.set(true);
+        setTimeout(() => this.isCopied.set(false), 2000);
+      }
+    } catch {
+      // Fallback
+    }
   }
 
   // --- Unit Toggle ---

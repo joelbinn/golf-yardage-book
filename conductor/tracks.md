@@ -3,8 +3,8 @@
 - [ ] **Track: Synkroniserad Kompakteringsräknare i GitHub-repot**
   *Link: [tracks/compaction_counter_sync_20260814/index.md](tracks/compaction_counter_sync_20260814/index.md)*
 
-- [ ] **Track: Visning av Git SHA i Mer-menyn**
-  *Link: [tracks/git_sha_display_20260814/index.md](tracks/git_sha_display_20260814/index.md)*
+- [x] **Track: Visning av Git SHA i Mer-menyn**
+  *Link: [archive/git_sha_display_20260814/index.md](archive/git_sha_display_20260814/index.md)*
 
 - [ ] **Track: Tee-positioner & Tänkt Spellinje**
   *Link: [tracks/tee_target_line_20260814/index.md](tracks/tee_target_line_20260814/index.md)*

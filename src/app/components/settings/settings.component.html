@@ -229,5 +229,19 @@
         </label>
       </div>
     </section>
+
+    <!-- Footer: App & Git SHA Version Info -->
+    <footer class="app-version-footer" (click)="copyGitSha()" [title]="'Klicka för att kopiera hela Git SHA: ' + (versionInfo()?.hash || '')">
+      @if (versionInfo(); as ver) {
+        <span class="version-text">
+          Commit: {{ ver.hash.slice(0, 7) }}... • {{ ver.dateTime || ver.date }}
+        </span>
+        @if (isCopied()) {
+          <span class="copy-badge">Kopierad!</span>
+        }
+      } @else {
+        <span class="version-text">Golf Yardage Book v1.0</span>
+      }
+    </footer>
   </div>
 </div>
