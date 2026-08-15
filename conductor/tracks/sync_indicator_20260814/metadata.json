@@ -1,0 +1,8 @@
+{
+  "track_id": "sync_indicator_20260814",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-08-15T11:56:00Z",
+  "updated_at": "2026-08-15T11:56:00Z",
+  "description": "Lägg till indikering i den undre menyn om data synkats till GitHub (grön/gul prick med tooltip)"
+}

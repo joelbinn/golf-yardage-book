@@ -1,5 +1,8 @@
 # Tracks Registry
 
+- [ ] **Track: GitHub-Synkindikator i den Undre Menyn**
+  *Link: [tracks/sync_indicator_20260814/index.md](tracks/sync_indicator_20260814/index.md)*
+
 - [x] **Track: Undre Navigeringsmeny på Desktop**
   *Link: [archive/desktop_nav_bar_20260814/index.md](archive/desktop_nav_bar_20260814/index.md)*
 
