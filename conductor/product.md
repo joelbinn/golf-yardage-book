@@ -23,6 +23,8 @@ Applikationen ger avstånd till green (framkant, mitten, bakkant) och hinder, m�
 - Registrering av obegränsat antal hinder per hål (Bunker, Vattenhinder, Träd, Custom) med beskrivning, ikoner och GPS-koordinater.
 
 ### 2. Spel- och Avståndsläge (Spela Runda Mode)
+- Heltäckande interaktiv satellitkarta (Leaflet) som bakgrund med flytande rundad toppbar för hålnavigering, hålinfo, GPS-status, score och enhetsväxling.
+- Utdragbar "Bottom Sheet" i underkanten (dockad ovanför bottenmenyn) med komprimerad green-avståndsvisning samt expanderat läge för hinder, slagspårning, scorekortskontroller och åtgärder.
 - Live GPS-avståndsvisning till green (Front/Center/Back) och registrerade hinder.
 - **Touch to Measure**: Klicka var som helst på satellitkartan för att mäta avstånd från spelarens GPS-position till den valda punkten.
 - **Hybrid Slag- & Score-spårning**:

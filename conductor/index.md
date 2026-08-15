@@ -17,9 +17,10 @@
 - [Inställningar, Backup & GitHub-synk](tracks/settings_sync_20260814)
 
 ## Active Tracks
-- [Redesign av Hålvy i Spela Runda](tracks/play_round_hole_view_redesign_20260815/index.md)
+None.
 
 ## Archived Tracks
+- [Redesign av Hålvy i Spela Runda](archive/play_round_hole_view_redesign_20260815/index.md)
 - [Digitalt Scorekort & Rundhistorik](tracks/scorecard_history_20260814/index.md)
 - [Spela Runda – Live GPS & Avståndsmätning](archive/play-round-gps/index.md)
 - [Ban- och Hålhantering](archive/course-management/index.md)
