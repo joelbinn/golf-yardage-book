@@ -1,5 +1,8 @@
 # Tracks Registry
 
+- [ ] **Track: Tee-positioner & Tänkt Spellinje**
+  *Link: [tracks/tee_target_line_20260814/index.md](tracks/tee_target_line_20260814/index.md)*
+
 - [ ] **Track: GitHub-Synkindikator i den Undre Menyn**
   *Link: [tracks/sync_indicator_20260814/index.md](tracks/sync_indicator_20260814/index.md)*
 
