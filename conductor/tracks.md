@@ -1,5 +1,8 @@
 # Tracks Registry
 
+- [x] **Track: Tvåvägssynkronisering & Remote Fetch/Merge**
+  *Link: [archive/two_way_sync_20260814/index.md](archive/two_way_sync_20260814/index.md)*
+
 - [x] **Track: GPS Slagspårning & Slagkedja på Kartan**
   *Link: [archive/shot_tracking_20260814/index.md](archive/shot_tracking_20260814/index.md)*
 

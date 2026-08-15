@@ -107,4 +107,37 @@ describe('GithubSyncService', () => {
     expect(result.compacted).toBe(true);
     expect(settingsService.syncCommitCount()).toBe(0);
   });
+
+  it('should fetchAndMergeRemote correctly when manifest contains remote course', async () => {
+    const mockManifest = {
+      courses: [{ id: 'remote-course-1', name: 'Remote GC' }],
+      rounds: []
+    };
+    const manifestB64 = btoa(JSON.stringify(mockManifest));
+
+    const mockCourse = {
+      id: 'remote-course-1',
+      name: 'Remote GC',
+      clubName: 'Remote Golf Club',
+      holesCount: 18,
+      holes: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    const courseB64 = btoa(JSON.stringify(mockCourse));
+
+    mockHttp.get = (url: string) => {
+      if (url.includes('manifest.json')) {
+        return of({ content: manifestB64 });
+      }
+      if (url.includes('remote-course-1.json')) {
+        return of({ content: courseB64 });
+      }
+      return throwError(() => ({ status: 404 }));
+    };
+
+    const res = await service.fetchAndMergeRemote(settingsService.githubConfig());
+    expect(res.fetchedCourses).toBe(1);
+    expect(storageService.courses().some((c) => c.id === 'remote-course-1')).toBe(true);
+  });
 });

@@ -1,0 +1,8 @@
+{
+  "track_id": "two_way_sync_20260814",
+  "type": "feature",
+  "status": "in_progress",
+  "created_at": "2026-08-15T09:15:00Z",
+  "updated_at": "2026-08-15T09:15:00Z",
+  "description": "Tvåvägssynkronisering med automatiskt Remote Fetch & Merge i GithubSyncService"
+}

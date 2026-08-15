@@ -4,6 +4,8 @@ import { firstValueFrom } from 'rxjs';
 import { SettingsService } from './settings.service';
 import { StorageService } from './storage.service';
 import { GithubConfig } from '../models/settings.model';
+import { Course } from '../models/course.model';
+import { Round } from '../models/round.model';
 
 export interface SyncResult {
   syncedCourses: number;
@@ -48,6 +50,22 @@ export class GithubSyncService {
     return btoa(unescape(encodeURIComponent(str)));
   }
 
+  /**
+   * Helper function for base64 decoding UTF-8 strings.
+   */
+  private fromBase64Utf8(base64Str: string): string {
+    const cleanStr = base64Str.replace(/\s/g, '');
+    if (typeof TextDecoder !== 'undefined') {
+      const binaryStr = atob(cleanStr);
+      const bytes = new Uint8Array(binaryStr.length);
+      for (let i = 0; i < binaryStr.length; i++) {
+        bytes[i] = binaryStr.charCodeAt(i);
+      }
+      return new TextDecoder().decode(bytes);
+    }
+    return decodeURIComponent(escape(atob(cleanStr)));
+  }
+
   private getAuthHeaders(token: string): HttpHeaders {
     return new HttpHeaders({
       Authorization: `Bearer ${token}`,
@@ -82,6 +100,24 @@ export class GithubSyncService {
         throw new Error(`Hittade inte repository '${cfg.owner}/${cfg.repo}' (404 Not Found).`);
       }
       throw new Error(err.message || 'Kunde inte ansluta till GitHub REST API.');
+    }
+  }
+
+  /**
+   * Fetches raw text content of a file on GitHub if it exists.
+   */
+  async getFileContent(path: string, cfg: GithubConfig): Promise<string | null> {
+    const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path}?ref=${cfg.branch || 'main'}`;
+    const headers = this.getAuthHeaders(cfg.token);
+
+    try {
+      const res: any = await firstValueFrom(this.http.get(url, { headers }));
+      if (res && res.content) {
+        return this.fromBase64Utf8(res.content);
+      }
+      return null;
+    } catch {
+      return null;
     }
   }
 
@@ -127,8 +163,84 @@ export class GithubSyncService {
   }
 
   /**
-   * Performs full synchronization of courses, rounds, and manifest.
-   * Compacts every 5th commit.
+   * Fetches remote manifest and merges new/updated courses and rounds from GitHub to local storage.
+   */
+  async fetchAndMergeRemote(cfg: GithubConfig): Promise<{ fetchedCourses: number; fetchedRounds: number }> {
+    const manifestStr = await this.getFileContent('manifest.json', cfg);
+    if (!manifestStr) {
+      return { fetchedCourses: 0, fetchedRounds: 0 };
+    }
+
+    let manifest: any;
+    try {
+      manifest = JSON.parse(manifestStr);
+    } catch {
+      return { fetchedCourses: 0, fetchedRounds: 0 };
+    }
+
+    const remoteCourses: Array<{ id: string; name: string; updatedAt?: string }> = Array.isArray(manifest.courses) ? manifest.courses : [];
+    const remoteRounds: Array<{ id: string; courseName: string; date?: string; updatedAt?: string }> = Array.isArray(manifest.rounds) ? manifest.rounds : [];
+
+    let fetchedCourses = 0;
+    let fetchedRounds = 0;
+
+    const localCoursesMap = new Map(this.storage.courses().map((c) => [c.id, c]));
+    const localRoundsMap = new Map(this.storage.rounds().map((r) => [r.id, r]));
+
+    // 1. Fetch remote courses if missing or remote is newer
+    for (const rCourse of remoteCourses) {
+      const local = localCoursesMap.get(rCourse.id);
+      const isRemoteNewer = !local || (rCourse.updatedAt && local.updatedAt && new Date(rCourse.updatedAt) > new Date(local.updatedAt));
+
+      if (isRemoteNewer) {
+        const courseContent = await this.getFileContent(`courses/${rCourse.id}.json`, cfg);
+        if (courseContent) {
+          try {
+            const courseData: Course = JSON.parse(courseContent);
+            if (courseData && courseData.id && courseData.name) {
+              await this.storage.saveCourse(courseData);
+              fetchedCourses++;
+            }
+          } catch (e) {
+            console.error(`Kunde inte tolka kursdata för ${rCourse.id}`, e);
+          }
+        }
+      }
+    }
+
+    // 2. Fetch remote rounds if missing or remote is newer
+    for (const rRound of remoteRounds) {
+      const local = localRoundsMap.get(rRound.id);
+      const isRemoteNewer = !local || (rRound.updatedAt && local.updatedAt && new Date(rRound.updatedAt) > new Date(local.updatedAt));
+
+      if (isRemoteNewer) {
+        const roundContent = await this.getFileContent(`rounds/${rRound.id}.json`, cfg);
+        if (roundContent) {
+          try {
+            const roundData: Round = JSON.parse(roundContent);
+            if (roundData && roundData.id && roundData.courseId) {
+              await this.storage.saveRound(roundData);
+              fetchedRounds++;
+            }
+          } catch (e) {
+            console.error(`Kunde inte tolka runddata för ${rRound.id}`, e);
+          }
+        }
+      }
+    }
+
+    if (fetchedCourses > 0 || fetchedRounds > 0) {
+      await this.storage.initStorage();
+    }
+
+    return { fetchedCourses, fetchedRounds };
+  }
+
+  /**
+   * Performs full synchronization:
+   * 1. Fetch & Merge remote changes from GitHub.
+   * 2. Push local changes to GitHub.
+   * 3. Update manifest.json & compact every 5th commit.
    */
   async syncAll(): Promise<SyncResult> {
     const cfg = this.settings.githubConfig();
@@ -149,10 +261,13 @@ export class GithubSyncService {
     this.lastSyncSuccess.set(null);
 
     try {
+      // Step A: Fetch & Merge remote changes from GitHub first
+      const { fetchedCourses, fetchedRounds } = await this.fetchAndMergeRemote(cfg);
+
       const courses = this.storage.courses();
       const rounds = this.storage.rounds();
 
-      // 1. Sync courses to /courses/{id}.json
+      // Step B: Push courses to /courses/{id}.json
       for (const course of courses) {
         await this.putFile(
           `courses/${course.id}.json`,
@@ -162,7 +277,7 @@ export class GithubSyncService {
         );
       }
 
-      // 2. Sync rounds to /rounds/{id}.json
+      // Step C: Push rounds to /rounds/{id}.json
       for (const round of rounds) {
         await this.putFile(
           `rounds/${round.id}.json`,
@@ -172,7 +287,7 @@ export class GithubSyncService {
         );
       }
 
-      // 3. Update manifest.json
+      // Step D: Update manifest.json
       const currentCommitCount = this.settings.incrementSyncCommitCount();
       const shouldCompact = currentCommitCount >= 5;
 
@@ -181,7 +296,7 @@ export class GithubSyncService {
         syncCount: currentCommitCount,
         compactedAt: shouldCompact ? new Date().toISOString() : undefined,
         courses: courses.map((c) => ({ id: c.id, name: c.name, updatedAt: c.updatedAt })),
-        rounds: rounds.map((r) => ({ id: r.id, courseName: r.courseName, date: r.date, status: r.status }))
+        rounds: rounds.map((r) => ({ id: r.id, courseName: r.courseName, date: r.date, updatedAt: r.updatedAt, status: r.status }))
       };
 
       await this.putFile(
@@ -191,7 +306,7 @@ export class GithubSyncService {
         cfg
       );
 
-      // 4. Perform compaction if syncCount >= 5
+      // Step E: Perform compaction if syncCount >= 5
       let compacted = false;
       if (shouldCompact) {
         const fullBackup = await this.storage.exportBackupData();
@@ -206,8 +321,8 @@ export class GithubSyncService {
       }
 
       const successMsg = compacted
-        ? `Synkronisering och automatisk kompaktering slutförd! (${courses.length} banor, ${rounds.length} rundor)`
-        : `Synkronisering slutförd! (${courses.length} banor, ${rounds.length} rundor. Synk ${currentCommitCount}/5 till kompaktering)`;
+        ? `Tvåvägssynk och kompaktering slutförd! (Hämtade ${fetchedCourses} banor, ${fetchedRounds} rundor)`
+        : `Tvåvägssynk slutförd! (Hämtade ${fetchedCourses} banor, ${fetchedRounds} rundor. Synk ${currentCommitCount}/5 till kompaktering)`;
 
       this.lastSyncSuccess.set(successMsg);
       this.isSyncing.set(false);
