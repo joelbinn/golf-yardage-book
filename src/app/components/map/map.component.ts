@@ -118,8 +118,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
       maxZoom: 19
     }).addTo(this.map);
 
-    L.control.zoom({ position: 'topright' }).addTo(this.map);
-
     this.map.on('click', (e: L.LeafletMouseEvent) => {
       const point: LatLng = { lat: e.latlng.lat, lng: e.latlng.lng };
       this.mapClick.emit(point);
@@ -361,6 +359,12 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     const target = green?.center?.lat ? green.center : (green?.front?.lat ? green.front : green?.back);
     if (target?.lat && target?.lng) {
       this.centerOnLocation(target as LatLng, 18);
+    }
+  }
+
+  invalidateSize(): void {
+    if (this.map) {
+      this.map.invalidateSize();
     }
   }
 

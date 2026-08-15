@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed, ElementRef, ViewChild, AfterViewInit, effect, HostListener } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, ViewChild, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { StorageService } from '../../services/storage.service';
@@ -7,8 +7,6 @@ import { SettingsService } from '../../services/settings.service';
 import { Course, Hole, CourseObject, ObjectType } from '../../models/course.model';
 import { Round, DistanceUnit, Score, FairwayHit, Shot } from '../../models/round.model';
 import { LatLng } from '../../models/geo.model';
-
-import * as L from 'leaflet';
 
 import { MapComponent } from '../map/map.component';
 
@@ -25,20 +23,18 @@ export interface HazardDistance {
   templateUrl: './play-round.component.html',
   styleUrl: './play-round.component.css'
 })
-export class PlayRoundComponent implements OnInit, OnDestroy {
+export class PlayRoundComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   readonly storage = inject(StorageService);
   readonly geoService = inject(GeolocationService);
   readonly settingsService = inject(SettingsService);
 
-  @ViewChild('mapContainer') mapContainer!: ElementRef<HTMLDivElement>;
+  @ViewChild(MapComponent) mapComponent?: MapComponent;
 
   @HostListener('window:resize')
   onResize(): void {
-    if (this.map) {
-      this.map.invalidateSize();
-    }
+    this.mapComponent?.invalidateSize();
   }
 
   // Signal State
@@ -47,6 +43,104 @@ export class PlayRoundComponent implements OnInit, OnDestroy {
   readonly currentHoleNumber = signal<number>(1);
   readonly unit = computed<DistanceUnit>(() => this.settingsService.unit() === 'y' ? 'yards' : 'meters');
   readonly measurePoint = signal<{ position: LatLng; distanceMeters: number } | null>(null);
+
+  // Bottom Sheet Partial & Fluid Drag State
+  readonly isBottomSheetExpanded = signal<boolean>(false);
+  readonly isDraggingSheet = signal<boolean>(false);
+  readonly currentSheetHeight = signal<number | null>(null);
+  readonly customSheetHeight = signal<number | null>(null);
+
+  private pointerStartY = 0;
+  private startSheetHeight = 0;
+
+  private getSheetHeights(): { minHeight: number; maxHeight: number } {
+    const containerHeight = window.innerHeight || 800;
+    const minHeight = 118;
+    const maxHeight = Math.max(minHeight + 100, containerHeight - 78 - 68);
+    return { minHeight, maxHeight };
+  }
+
+  toggleBottomSheet(): void {
+    if (this.customSheetHeight() !== null || this.isBottomSheetExpanded()) {
+      // Collapse
+      this.isBottomSheetExpanded.set(false);
+      this.customSheetHeight.set(null);
+    } else {
+      // Expand
+      this.isBottomSheetExpanded.set(true);
+      this.customSheetHeight.set(null);
+    }
+    this.currentSheetHeight.set(null);
+    setTimeout(() => {
+      this.mapComponent?.invalidateSize();
+    }, 300);
+  }
+
+  onPointerDown(event: PointerEvent): void {
+    if (event.button !== 0 && event.pointerType === 'mouse') return;
+    const { minHeight, maxHeight } = this.getSheetHeights();
+    this.pointerStartY = event.clientY;
+
+    if (this.customSheetHeight() !== null) {
+      this.startSheetHeight = this.customSheetHeight()!;
+    } else if (this.isBottomSheetExpanded()) {
+      this.startSheetHeight = maxHeight;
+    } else {
+      this.startSheetHeight = minHeight;
+    }
+
+    this.isDraggingSheet.set(true);
+
+    const target = event.target as HTMLElement;
+    if (target.setPointerCapture) {
+      try {
+        target.setPointerCapture(event.pointerId);
+      } catch (_) {}
+    }
+  }
+
+  onPointerMove(event: PointerEvent): void {
+    if (!this.isDraggingSheet()) return;
+    const { minHeight, maxHeight } = this.getSheetHeights();
+    const deltaY = this.pointerStartY - event.clientY; // Positive = Dragged UP
+    const newHeight = Math.min(maxHeight, Math.max(minHeight, this.startSheetHeight + deltaY));
+    this.currentSheetHeight.set(newHeight);
+  }
+
+  onPointerUp(event: PointerEvent): void {
+    if (!this.isDraggingSheet()) return;
+    const { minHeight, maxHeight } = this.getSheetHeights();
+    const deltaY = this.pointerStartY - event.clientY;
+    this.isDraggingSheet.set(false);
+
+    const target = event.target as HTMLElement;
+    if (target.releasePointerCapture) {
+      try {
+        target.releasePointerCapture(event.pointerId);
+      } catch (_) {}
+    }
+
+    if (Math.abs(deltaY) < 6) {
+      this.toggleBottomSheet();
+    } else {
+      const finalHeight = this.currentSheetHeight() ?? (this.startSheetHeight + deltaY);
+      if (finalHeight <= minHeight + 15) {
+        // Collapsed
+        this.isBottomSheetExpanded.set(false);
+        this.customSheetHeight.set(null);
+      } else if (finalHeight >= maxHeight - 15) {
+        // Fully Expanded
+        this.isBottomSheetExpanded.set(true);
+        this.customSheetHeight.set(null);
+      } else {
+        // Partially Open at exact dragged height
+        this.isBottomSheetExpanded.set(false);
+        this.customSheetHeight.set(finalHeight);
+      }
+      this.currentSheetHeight.set(null);
+      setTimeout(() => this.mapComponent?.invalidateSize(), 300);
+    }
+  }
 
   // Add Hazard Modal State
   readonly isAddHazardModalOpen = signal<boolean>(false);
@@ -60,24 +154,6 @@ export class PlayRoundComponent implements OnInit, OnDestroy {
     'Järn 4', 'Järn 5', 'Järn 6', 'Järn 7', 'Järn 8', 'Järn 9',
     'PW', 'GW', 'SW', 'LW', 'Putter'
   ];
-
-  // Map instance reference
-  private map: any = null;
-  private playerMarker: any = null;
-  private greenMarkers: any[] = [];
-  private hazardMarkers: any[] = [];
-  private measureLine: any = null;
-  private measureMarker: any = null;
-
-  constructor() {
-    effect(() => {
-      const hole = this.currentHole();
-      if (this.map && hole) {
-        this.updateMapLayers();
-        this.centerMapOnGreenOrPlayer();
-      }
-    });
-  }
 
   // Computed Properties
   readonly currentHole = computed<Hole | undefined>(() => {
@@ -327,7 +403,7 @@ export class PlayRoundComponent implements OnInit, OnDestroy {
     const p = this.userPos();
     const hole = this.currentHole();
     if (!hole || !hole.objects) return [];
-    
+
     const isYards = this.unit() === 'yards';
     const multiplier = isYards ? 1.09361 : 1;
 
@@ -364,23 +440,12 @@ export class PlayRoundComponent implements OnInit, OnDestroy {
         this.router.navigate(['/courses']);
       }
     } else {
-      // Check active round
       const active = this.storage.activeRound();
       if (active) {
         this.router.navigate(['/play', active.id]);
       } else {
         this.router.navigate(['/courses']);
       }
-    }
-  }
-
-  ngAfterViewInit(): void {
-    this.initMap();
-  }
-
-  ngOnDestroy(): void {
-    if (this.map) {
-      this.map.remove();
     }
   }
 
@@ -411,227 +476,22 @@ export class PlayRoundComponent implements OnInit, OnDestroy {
 
   setHole(holeNum: number): void {
     this.currentHoleNumber.set(holeNum);
-    this.clearMeasure();
     const r = this.round();
     if (r) {
       r.currentHole = holeNum;
       this.storage.saveRound(r);
     }
-    this.updateMapLayers();
-    this.centerMapOnGreenOrPlayer();
-  }
-
-  // --- Map & GPS Interactions ---
-  private initMap(): void {
-    if (!this.mapContainer) return;
-
-    // Default center (Stockholm area or fallback)
-    const initialCenter: [number, number] = [59.55140, 17.54140];
-    this.map = L.map(this.mapContainer.nativeElement, {
-      zoomControl: false,
-      attributionControl: false
-    }).setView(initialCenter, 16);
-
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-      maxZoom: 19
-    }).addTo(this.map);
-
-    // Invalidate size multiple times to ensure Leaflet calculates correct canvas size after paint
-    [50, 200, 500].forEach((delay) => {
-      setTimeout(() => {
-        if (this.map) {
-          this.map.invalidateSize();
-        }
-      }, delay);
-    });
-
-    // Map click for Touch to Measure
-    this.map.on('click', (e: any) => {
-      this.handleMapClick(e.latlng);
-    });
-
-    this.updateMapLayers();
-    this.centerMapOnGreenOrPlayer();
-
-    // Effect/Subscription to GPS updates
-    let lastLat = 0;
-    let lastLng = 0;
-    setInterval(() => {
-      const pos = this.userPos();
-      if (pos && (pos.lat !== lastLat || pos.lng !== lastLng)) {
-        lastLat = pos.lat;
-        lastLng = pos.lng;
-        this.updatePlayerMarker(pos);
-        if (this.measurePoint()) {
-          this.drawMeasureLine();
-        }
-      }
-    }, 1000);
+    setTimeout(() => {
+      this.mapComponent?.centerOnGreen();
+    }, 50);
   }
 
   centerOnPlayer(): void {
-    const pos = this.userPos();
-    if (pos && pos.lat && pos.lng && this.map) {
-      this.map.setView([pos.lat, pos.lng], 18);
-    }
+    this.mapComponent?.centerOnUser();
   }
 
   centerOnGreen(): void {
-    const green = this.currentHole()?.green;
-    const target = green?.center?.lat ? green.center : (green?.front?.lat ? green.front : green?.back);
-    if (target?.lat && target?.lng && this.map) {
-      this.map.setView([target.lat, target.lng], 18);
-    }
-  }
-
-  private centerMapOnGreenOrPlayer(): void {
-    const green = this.currentHole()?.green;
-    const target = green?.center?.lat ? green.center : (green?.front?.lat ? green.front : green?.back);
-    if (target?.lat && target?.lng && this.map) {
-      this.centerOnGreen();
-    } else {
-      const pos = this.userPos();
-      if (pos && pos.lat && pos.lng && this.map) {
-        this.centerOnPlayer();
-      } else if (this.map) {
-        this.map.setView([59.55140, 17.54140], 16);
-      }
-    }
-  }
-
-  private updatePlayerMarker(pos: LatLng): void {
-    if (!this.map) return;
-
-    const playerIcon = L.divIcon({
-      className: 'custom-player-marker',
-      html: `
-        <div class="player-dot-pulse"></div>
-        <div class="player-dot-core"></div>
-      `,
-      iconSize: [24, 24],
-      iconAnchor: [12, 12]
-    });
-
-    if (this.playerMarker) {
-      this.playerMarker.setLatLng([pos.lat, pos.lng]);
-    } else {
-      this.playerMarker = L.marker([pos.lat, pos.lng], { icon: playerIcon }).addTo(this.map);
-    }
-  }
-
-  private updateMapLayers(): void {
-    if (!this.map) return;
-
-    // Clear old markers
-    this.greenMarkers.forEach((m) => m.remove());
-    this.greenMarkers = [];
-    this.hazardMarkers.forEach((m) => m.remove());
-    this.hazardMarkers = [];
-
-    const hole = this.currentHole();
-    if (!hole) return;
-
-    // Green markers
-    if (hole.green) {
-      const g = hole.green;
-      if (g.front?.lat) this.addGreenMarker(g.front, 'F', '#4ade80');
-      if (g.center?.lat) this.addGreenMarker(g.center, 'C', '#22c55e');
-      if (g.back?.lat) this.addGreenMarker(g.back, 'B', '#15803d');
-    }
-
-    // Hazard markers
-    if (hole.objects) {
-      hole.objects.forEach((obj) => {
-        if (obj.position?.lat) {
-          const color = obj.type === 'water' ? '#3b82f6' : (obj.type === 'bunker' ? '#f59e0b' : '#10b981');
-          const icon = L.divIcon({
-            className: 'custom-hazard-marker',
-            html: `<div class="hazard-badge" style="background:${color}">${obj.name[0]?.toUpperCase() || 'H'}</div>`,
-            iconSize: [20, 20],
-            iconAnchor: [10, 10]
-          });
-          const marker = L.marker([obj.position.lat, obj.position.lng], { icon }).addTo(this.map);
-          marker.bindTooltip(obj.name, { permanent: false });
-          this.hazardMarkers.push(marker);
-        }
-      });
-    }
-  }
-
-  private addGreenMarker(pos: LatLng, label: string, color: string): void {
-    const icon = L.divIcon({
-      className: 'custom-green-marker',
-      html: `<div class="green-badge" style="background:${color}">${label}</div>`,
-      iconSize: [22, 22],
-      iconAnchor: [11, 11]
-    });
-    const m = L.marker([pos.lat, pos.lng], { icon }).addTo(this.map);
-    this.greenMarkers.push(m);
-  }
-
-  // --- Touch to Measure ---
-  private handleMapClick(latlng: { lat: number; lng: number }): void {
-    const user = this.userPos();
-    if (!user) return;
-
-    const targetPos: LatLng = { lat: latlng.lat, lng: latlng.lng };
-    const distMeters = this.calculateDistance(user, targetPos);
-
-    this.measurePoint.set({
-      position: targetPos,
-      distanceMeters: distMeters
-    });
-
-    this.drawMeasureLine();
-  }
-
-  private drawMeasureLine(): void {
-    if (!this.map) return;
-
-    const user = this.userPos();
-    const mp = this.measurePoint();
-    if (!user || !mp) return;
-
-    if (this.measureLine) this.measureLine.remove();
-    if (this.measureMarker) this.measureMarker.remove();
-
-    const isYards = this.unit() === 'yards';
-    const displayDist = Math.round(mp.distanceMeters * (isYards ? 1.09361 : 1));
-    const unitLabel = isYards ? 'yd' : 'm';
-
-    // Dashed orange line from player to touch point
-    this.measureLine = L.polyline(
-      [
-        [user.lat, user.lng],
-        [mp.position.lat, mp.position.lng]
-      ],
-      {
-        color: '#c67139',
-        weight: 3,
-        dashArray: '6, 6'
-      }
-    ).addTo(this.map);
-
-    const measureIcon = L.divIcon({
-      className: 'custom-measure-marker',
-      html: `<div class="measure-pill">${displayDist} ${unitLabel}</div>`,
-      iconSize: [60, 24],
-      iconAnchor: [30, 12]
-    });
-
-    this.measureMarker = L.marker([mp.position.lat, mp.position.lng], { icon: measureIcon }).addTo(this.map);
-  }
-
-  clearMeasure(): void {
-    this.measurePoint.set(null);
-    if (this.measureLine) {
-      this.measureLine.remove();
-      this.measureLine = null;
-    }
-    if (this.measureMarker) {
-      this.measureMarker.remove();
-      this.measureMarker = null;
-    }
+    this.mapComponent?.centerOnGreen();
   }
 
   // --- Snabbregistrera Hinder ---
@@ -686,8 +546,6 @@ export class PlayRoundComponent implements OnInit, OnDestroy {
     c.holes[holeIndex].objects.push(newObj);
     await this.storage.saveCourse(c);
     this.course.set({ ...c });
-
-    this.updateMapLayers();
     this.closeAddHazardModal();
   }
 
@@ -699,7 +557,7 @@ export class PlayRoundComponent implements OnInit, OnDestroy {
   }
 
   private calculateDistance(p1: LatLng, p2: LatLng): number {
-    const R = 6371000; // Earth radius in meters
+    const R = 6371000;
     const dLat = this.toRad(p2.lat - p1.lat);
     const dLng = this.toRad(p2.lng - p1.lng);
     const a =
