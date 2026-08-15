@@ -1,5 +1,8 @@
 # Tracks Registry
 
+- [x] **Track: Undre Navigeringsmeny på Desktop**
+  *Link: [archive/desktop_nav_bar_20260814/index.md](archive/desktop_nav_bar_20260814/index.md)*
+
 - [x] **Track: Automatisk Bakgrundssynkronisering**
   *Link: [archive/auto_background_sync_20260814/index.md](archive/auto_background_sync_20260814/index.md)*
 

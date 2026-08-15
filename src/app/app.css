@@ -19,10 +19,6 @@
     height: 100dvh;
     overflow: hidden;
   }
-
-  .content-viewport {
-    padding-bottom: 0;
-  }
 }
 
 .status-bar {

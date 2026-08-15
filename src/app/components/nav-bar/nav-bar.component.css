@@ -34,7 +34,11 @@
 }
 
 @media (min-width: 768px) {
-  :host {
-    display: none !important;
+  .bottom-nav {
+    max-width: 600px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
   }
 }
