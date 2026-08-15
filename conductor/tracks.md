@@ -1,5 +1,8 @@
 # Tracks Registry
 
+- [ ] **Track: Redesign av Hålvy i Spela Runda (Full-screen karta & Bottom Sheet)**
+  *Link: [tracks/play_round_hole_view_redesign_20260815/index.md](tracks/play_round_hole_view_redesign_20260815/index.md)*
+
 - [ ] **Track: Crosshair Cursor på Kartbilden**
   *Link: [tracks/map_crosshair_cursor_20260814/index.md](tracks/map_crosshair_cursor_20260814/index.md)*
 
