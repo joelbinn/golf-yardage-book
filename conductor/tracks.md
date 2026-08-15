@@ -1,5 +1,8 @@
 # Tracks Registry
 
+- [ ] **Track: Visning av Git SHA i Mer-menyn**
+  *Link: [tracks/git_sha_display_20260814/index.md](tracks/git_sha_display_20260814/index.md)*
+
 - [ ] **Track: Tee-positioner & Tänkt Spellinje**
   *Link: [tracks/tee_target_line_20260814/index.md](tracks/tee_target_line_20260814/index.md)*
 
