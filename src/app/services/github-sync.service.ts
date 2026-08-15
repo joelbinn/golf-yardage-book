@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom, debounceTime } from 'rxjs';
 import { SettingsService } from './settings.service';
@@ -6,6 +6,8 @@ import { StorageService } from './storage.service';
 import { GithubConfig } from '../models/settings.model';
 import { Course } from '../models/course.model';
 import { Round } from '../models/round.model';
+
+export type SyncState = 'synced' | 'pending' | 'error' | 'disabled';
 
 export interface SyncResult {
   syncedCourses: number;
@@ -21,6 +23,25 @@ export class GithubSyncService {
   private settings: SettingsService;
   private storage: StorageService;
 
+  readonly isSyncing = signal<boolean>(false);
+  readonly lastSyncError = signal<string | null>(null);
+  readonly lastSyncSuccess = signal<string | null>(null);
+  readonly syncState = signal<SyncState>('disabled');
+
+  readonly syncStateText = computed<string>(() => {
+    switch (this.syncState()) {
+      case 'synced':
+        return 'Alla ändringar synkroniserade till GitHub';
+      case 'pending':
+        return 'Ändringar väntar på synkronisering...';
+      case 'error':
+        return this.lastSyncError() ? `Synkroniseringsfel: ${this.lastSyncError()}` : 'Synkroniseringsfel eller offline';
+      case 'disabled':
+      default:
+        return 'GitHub-synkronisering ej konfigurerad';
+    }
+  });
+
   constructor(
     http?: HttpClient,
     settings?: SettingsService,
@@ -30,8 +51,19 @@ export class GithubSyncService {
     this.settings = settings ?? inject(SettingsService);
     this.storage = storage ?? inject(StorageService);
 
+    this.checkInitialSyncState();
+
     // Reaktiv bakgrundssynkning 3 sekunder efter senaste dataförändring
     if (this.storage && this.storage.dataChanged$) {
+      this.storage.dataChanged$.subscribe(() => {
+        const cfg = this.settings?.githubConfig();
+        if (cfg && cfg.owner && cfg.repo && cfg.token) {
+          this.syncState.set('pending');
+        } else {
+          this.syncState.set('disabled');
+        }
+      });
+
       this.storage.dataChanged$
         .pipe(debounceTime(3000))
         .subscribe(() => {
@@ -40,22 +72,34 @@ export class GithubSyncService {
     }
   }
 
-  readonly isSyncing = signal<boolean>(false);
-  readonly lastSyncError = signal<string | null>(null);
-  readonly lastSyncSuccess = signal<string | null>(null);
+  checkInitialSyncState(): void {
+    const cfg = this.settings?.githubConfig();
+    if (!cfg || !cfg.owner || !cfg.repo || !cfg.token) {
+      this.syncState.set('disabled');
+    } else if (this.syncState() === 'disabled') {
+      this.syncState.set('synced');
+    }
+  }
 
   /**
    * Tyst bakgrundssynkning som inte avbryter eller visar felrutor i UI.
    */
   async backgroundSync(): Promise<void> {
     const cfg = this.settings.githubConfig();
-    if (!cfg.owner || !cfg.repo || !cfg.token) return;
-    if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
+    if (!cfg.owner || !cfg.repo || !cfg.token) {
+      this.syncState.set('disabled');
+      return;
+    }
+    if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+      this.syncState.set('error');
+      return;
+    }
     if (this.isSyncing()) return;
 
     try {
       await this.syncAll();
     } catch (err) {
+      this.syncState.set('error');
       console.warn('Automatisk bakgrundssynkning misslyckades tyst:', err);
     }
   }
@@ -272,16 +316,19 @@ export class GithubSyncService {
     if (!cfg.owner || !cfg.repo || !cfg.token) {
       const msg = 'GitHub-konfiguration saknas (ägare, repo eller token).';
       this.lastSyncError.set(msg);
+      this.syncState.set('disabled');
       throw new Error(msg);
     }
 
     if (typeof navigator !== 'undefined' && navigator.onLine === false) {
       const msg = 'Enheten är offline. Kan inte synkronisera mot GitHub.';
       this.lastSyncError.set(msg);
+      this.syncState.set('error');
       throw new Error(msg);
     }
 
     this.isSyncing.set(true);
+    this.syncState.set('pending');
     this.lastSyncError.set(null);
     this.lastSyncSuccess.set(null);
 
@@ -350,6 +397,7 @@ export class GithubSyncService {
         : `Tvåvägssynk slutförd! (Hämtade ${fetchedCourses} banor, ${fetchedRounds} rundor. Synk ${currentCommitCount}/5 till kompaktering)`;
 
       this.lastSyncSuccess.set(successMsg);
+      this.syncState.set('synced');
       this.isSyncing.set(false);
 
       return {
@@ -359,6 +407,7 @@ export class GithubSyncService {
       };
     } catch (err: any) {
       this.isSyncing.set(false);
+      this.syncState.set('error');
       const errorMsg = err.message || 'Ett okänt fel uppstod vid synkroniseringen.';
       this.lastSyncError.set(errorMsg);
       throw new Error(errorMsg);

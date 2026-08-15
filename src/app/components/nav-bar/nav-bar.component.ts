@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { GithubSyncService } from '../../services/github-sync.service';
 
 @Component({
   selector: 'app-nav-bar',
@@ -10,5 +11,9 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
   styleUrl: './nav-bar.component.css'
 })
 export class NavBarComponent {
-  private readonly router = inject(Router);
+  readonly githubSyncService: GithubSyncService;
+
+  constructor(githubSyncService?: GithubSyncService) {
+    this.githubSyncService = githubSyncService ?? inject(GithubSyncService);
+  }
 }

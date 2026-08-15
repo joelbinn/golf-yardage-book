@@ -147,4 +147,21 @@ describe('GithubSyncService', () => {
 
     await expect(service.backgroundSync()).resolves.not.toThrow();
   });
+
+  it('should update syncState and syncStateText correctly', async () => {
+    expect(service.syncState()).toBe('synced');
+    expect(service.syncStateText()).toBe('Alla ändringar synkroniserade till GitHub');
+
+    // Test disabled state
+    settingsService.saveGithubConfig({ owner: '', repo: '', token: '', branch: 'main' });
+    service.checkInitialSyncState();
+    expect(service.syncState()).toBe('disabled');
+    expect(service.syncStateText()).toBe('GitHub-synkronisering ej konfigurerad');
+
+    // Test pending state on data change
+    settingsService.saveGithubConfig({ owner: 'user', repo: 'repo', token: 'token', branch: 'main' });
+    storageService.dataChanged$.next();
+    expect(service.syncState()).toBe('pending');
+    expect(service.syncStateText()).toBe('Ändringar väntar på synkronisering...');
+  });
 });

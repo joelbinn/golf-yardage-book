@@ -33,6 +33,62 @@
   color: var(--color-text-dark);
 }
 
+.icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sync-dot {
+  position: absolute;
+  top: -2px;
+  right: -5px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-bg);
+  box-sizing: content-box;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.nav-item.active .sync-dot {
+  border-color: var(--color-card);
+}
+
+/* Color States */
+.sync-dot.synced {
+  background-color: #22c55e; /* Green */
+}
+
+.sync-dot.pending {
+  background-color: #eab308; /* Yellow */
+  animation: pulseDot 1.5s infinite ease-in-out;
+}
+
+.sync-dot.error {
+  background-color: #ef4444; /* Red */
+}
+
+.sync-dot.disabled {
+  background-color: #9ca3af; /* Gray */
+}
+
+@keyframes pulseDot {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.25);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+}
+
 @media (min-width: 768px) {
   .bottom-nav {
     max-width: 600px;
