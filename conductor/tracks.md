@@ -1,5 +1,8 @@
 # Tracks Registry
 
+- [ ] **Track: Crosshair Cursor på Kartbilden**
+  *Link: [tracks/map_crosshair_cursor_20260814/index.md](tracks/map_crosshair_cursor_20260814/index.md)*
+
 - [x] **Track: Fixa Rullning på Mer-sidan i Mobilvy**
   *Link: [archive/mobile_settings_scroll_20260814/index.md](archive/mobile_settings_scroll_20260814/index.md)*
 
