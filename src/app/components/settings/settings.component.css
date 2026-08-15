@@ -1,9 +1,12 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
 .settings-container {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  padding: 16px;
-  overflow-y: auto;
+  padding: 16px 16px 140px 16px;
   box-sizing: border-box;
   background: var(--color-bg, #f5ead8);
 }
@@ -30,7 +33,6 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding-bottom: 32px;
 }
 
 /* Card Container */
