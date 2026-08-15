@@ -140,4 +140,11 @@ describe('GithubSyncService', () => {
     expect(res.fetchedCourses).toBe(1);
     expect(storageService.courses().some((c) => c.id === 'remote-course-1')).toBe(true);
   });
+
+  it('should run backgroundSync without throwing errors', async () => {
+    mockHttp.get = () => throwError(() => ({ status: 404 }));
+    mockHttp.put = () => of({ content: { sha: 'sha-bg' } });
+
+    await expect(service.backgroundSync()).resolves.not.toThrow();
+  });
 });

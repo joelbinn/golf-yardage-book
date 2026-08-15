@@ -1,4 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core';
+import { Subject } from 'rxjs';
 import { Course } from '../models/course.model';
 import { Round, RoundStats } from '../models/round.model';
 
@@ -12,6 +13,9 @@ const ROUNDS_STORE = 'rounds';
 })
 export class StorageService {
   private dbPromise: Promise<IDBDatabase> | null = null;
+
+  // Händelsekanal för reaktiv bakgrundssynkning
+  readonly dataChanged$ = new Subject<void>();
 
   // Reactive signals for component consumption
   readonly courses = signal<Course[]>([]);
@@ -159,6 +163,7 @@ export class StorageService {
     updatedList.push(updatedCourse);
     this.courses.set(updatedList);
     this.saveToLocalStorage('courses', updatedList);
+    this.dataChanged$.next();
   }
 
   async deleteCourse(id: string): Promise<void> {
@@ -172,6 +177,7 @@ export class StorageService {
     const updatedList = this.courses().filter((c) => c.id !== id);
     this.courses.set(updatedList);
     this.saveToLocalStorage('courses', updatedList);
+    this.dataChanged$.next();
   }
 
   readonly activeRound = computed(() => this.rounds().find((r) => r.status === 'in_progress'));
@@ -250,6 +256,7 @@ export class StorageService {
     updatedList.push(updatedRound);
     this.rounds.set(updatedList);
     this.saveToLocalStorage('rounds', updatedList);
+    this.dataChanged$.next();
   }
 
   async deleteRound(id: string): Promise<void> {
@@ -263,6 +270,7 @@ export class StorageService {
     const updatedList = this.rounds().filter((r) => r.id !== id);
     this.rounds.set(updatedList);
     this.saveToLocalStorage('rounds', updatedList);
+    this.dataChanged$.next();
   }
 
   calculateRoundStats(round: Round): RoundStats {

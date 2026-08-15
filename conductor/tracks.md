@@ -1,5 +1,8 @@
 # Tracks Registry
 
+- [x] **Track: Automatisk Bakgrundssynkronisering**
+  *Link: [archive/auto_background_sync_20260814/index.md](archive/auto_background_sync_20260814/index.md)*
+
 - [x] **Track: Tvåvägssynkronisering & Remote Fetch/Merge**
   *Link: [archive/two_way_sync_20260814/index.md](archive/two_way_sync_20260814/index.md)*
 

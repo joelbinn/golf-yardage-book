@@ -1,0 +1,8 @@
+{
+  "track_id": "auto_background_sync_20260814",
+  "type": "feature",
+  "status": "in_progress",
+  "created_at": "2026-08-15T11:45:00Z",
+  "updated_at": "2026-08-15T11:45:00Z",
+  "description": "Automatisk bakgrundssynkronisering vid alla typer av dataförändringar"
+}

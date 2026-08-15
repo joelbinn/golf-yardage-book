@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, debounceTime } from 'rxjs';
 import { SettingsService } from './settings.service';
 import { StorageService } from './storage.service';
 import { GithubConfig } from '../models/settings.model';
@@ -29,11 +29,36 @@ export class GithubSyncService {
     this.http = http ?? inject(HttpClient);
     this.settings = settings ?? inject(SettingsService);
     this.storage = storage ?? inject(StorageService);
+
+    // Reaktiv bakgrundssynkning 3 sekunder efter senaste dataförändring
+    if (this.storage && this.storage.dataChanged$) {
+      this.storage.dataChanged$
+        .pipe(debounceTime(3000))
+        .subscribe(() => {
+          this.backgroundSync();
+        });
+    }
   }
 
   readonly isSyncing = signal<boolean>(false);
   readonly lastSyncError = signal<string | null>(null);
   readonly lastSyncSuccess = signal<string | null>(null);
+
+  /**
+   * Tyst bakgrundssynkning som inte avbryter eller visar felrutor i UI.
+   */
+  async backgroundSync(): Promise<void> {
+    const cfg = this.settings.githubConfig();
+    if (!cfg.owner || !cfg.repo || !cfg.token) return;
+    if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
+    if (this.isSyncing()) return;
+
+    try {
+      await this.syncAll();
+    } catch (err) {
+      console.warn('Automatisk bakgrundssynkning misslyckades tyst:', err);
+    }
+  }
 
   /**
    * Helper function for base64 encoding UTF-8 strings.
