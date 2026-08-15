@@ -1,5 +1,8 @@
 # Tracks Registry
 
+- [ ] **Track: Synkroniserad Kompakteringsräknare i GitHub-repot**
+  *Link: [tracks/compaction_counter_sync_20260814/index.md](tracks/compaction_counter_sync_20260814/index.md)*
+
 - [ ] **Track: Visning av Git SHA i Mer-menyn**
   *Link: [tracks/git_sha_display_20260814/index.md](tracks/git_sha_display_20260814/index.md)*
 
