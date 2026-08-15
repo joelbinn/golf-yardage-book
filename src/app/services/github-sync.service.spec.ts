@@ -164,4 +164,27 @@ describe('GithubSyncService', () => {
     expect(service.syncState()).toBe('pending');
     expect(service.syncStateText()).toBe('Ändringar väntar på synkronisering...');
   });
+
+  it('should sync compaction counter from remote manifest.syncCount in fetchAndMergeRemote', async () => {
+    const mockManifest = {
+      syncCount: 3,
+      courses: [],
+      rounds: []
+    };
+    const manifestB64 = btoa(JSON.stringify(mockManifest));
+
+    mockHttp.get = (url: string) => {
+      if (url.includes('manifest.json')) {
+        return of({ content: manifestB64 });
+      }
+      return throwError(() => ({ status: 404 }));
+    };
+
+    settingsService.setSyncCommitCount(1);
+    expect(settingsService.syncCommitCount()).toBe(1);
+
+    await service.fetchAndMergeRemote(settingsService.githubConfig());
+
+    expect(settingsService.syncCommitCount()).toBe(3);
+  });
 });

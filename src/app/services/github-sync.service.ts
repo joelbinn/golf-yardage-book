@@ -247,6 +247,10 @@ export class GithubSyncService {
       return { fetchedCourses: 0, fetchedRounds: 0 };
     }
 
+    if (typeof manifest.syncCount === 'number') {
+      this.settings.setSyncCommitCount(manifest.syncCount);
+    }
+
     const remoteCourses: Array<{ id: string; name: string; updatedAt?: string }> = Array.isArray(manifest.courses) ? manifest.courses : [];
     const remoteRounds: Array<{ id: string; courseName: string; date?: string; updatedAt?: string }> = Array.isArray(manifest.rounds) ? manifest.rounds : [];
 
