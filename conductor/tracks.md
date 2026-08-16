@@ -1,6 +1,6 @@
 # Tracks Registry
 
-- [ ] **Track: Visning av Avstånd vid Målpunkt för Touch to Measure**
+- [x] **Track: Visning av Avstånd vid Målpunkt för Touch to Measure**
   *Link: [tracks/touch_to_measure_distance_fix_20260816/index.md](tracks/touch_to_measure_distance_fix_20260816/index.md)*
 
 - [x] **Track: Redesign av Hålvy i Spela Runda (Full-screen karta & Bottom Sheet)**
