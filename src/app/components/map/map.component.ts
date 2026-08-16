@@ -93,6 +93,9 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
       if (changes['shots']) {
         this.renderShotChain();
       }
+      if (changes['unitLabel'] && this.selectedPoint()) {
+        this.recalculateDistance();
+      }
     }
   }
 
@@ -271,21 +274,6 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
     if (!this.map) return;
 
     this.selectedPoint.set(target);
-    const targetLatLng: L.LatLngExpression = [target.lat, target.lng];
-
-    const targetIcon = L.divIcon({
-      className: 'custom-target-marker',
-      html: `<div class="target-crosshair"><span></span></div>`,
-      iconSize: [30, 30],
-      iconAnchor: [15, 15]
-    });
-
-    if (this.measureMarker) {
-      this.measureMarker.setLatLng(targetLatLng);
-    } else {
-      this.measureMarker = L.marker(targetLatLng, { icon: targetIcon }).addTo(this.map);
-    }
-
     this.recalculateDistance();
   }
 
@@ -301,6 +289,28 @@ export class MapComponent implements OnInit, OnChanges, OnDestroy {
 
     this.measuredDistanceMeters.set(distMeters);
     this.measuredDistanceYards.set(distYards);
+
+    const distDisplay = this.unitLabel === 'yd' ? Math.round(distYards) : Math.round(distMeters);
+    const targetLatLng: L.LatLngExpression = [target.lat, target.lng];
+
+    const targetIcon = L.divIcon({
+      className: 'custom-target-marker',
+      html: `
+        <div class="target-marker-wrapper">
+          <div class="target-crosshair"><span></span></div>
+          <div class="target-distance-pill">${distDisplay} ${this.unitLabel}</div>
+        </div>
+      `,
+      iconSize: [120, 36],
+      iconAnchor: [15, 18]
+    });
+
+    if (this.measureMarker) {
+      this.measureMarker.setLatLng(targetLatLng);
+      this.measureMarker.setIcon(targetIcon);
+    } else {
+      this.measureMarker = L.marker(targetLatLng, { icon: targetIcon }).addTo(this.map);
+    }
 
     const points: L.LatLngExpression[] = [
       [origin.lat, origin.lng],

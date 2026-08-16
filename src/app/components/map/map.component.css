@@ -53,11 +53,19 @@
   }
 }
 
-/* Target Crosshair Marker */
+/* Target Crosshair Marker & Distance Pill */
 ::ng-deep .custom-target-marker {
   display: flex;
   align-items: center;
-  justify-content: center;
+  overflow: visible !important;
+}
+
+::ng-deep .target-marker-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
 ::ng-deep .target-crosshair {
@@ -67,6 +75,21 @@
   border-radius: 50%;
   background-color: rgba(251, 191, 36, 0.3);
   box-shadow: 0 0 12px rgba(251, 191, 36, 0.8);
+  animation: target-bounce 0.4s ease-out;
+  flex: none;
+}
+
+::ng-deep .target-distance-pill {
+  background: #201e1d;
+  color: #fbbf24;
+  font-family: 'Figtree', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1.5px solid #fbbf24;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  letter-spacing: 0.5px;
   animation: target-bounce 0.4s ease-out;
 }
 
