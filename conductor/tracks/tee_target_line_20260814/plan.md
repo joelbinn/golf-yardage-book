@@ -1,5 +1,8 @@
 # Implementation Plan: Tee-positioner, Tänkt Spellinje & Hålvridning (Green Högst Upp)
 
+## Core Guidelines & Skill Usage
+1. **Developer Skill**: Skillet [`angular-developer`](file:///Users/joel/.gemini/config/skills/angular-developer/SKILL.md) skall användas för all komponent- och tjänsteutveckling (Angular Signals, Standalone Components, `@if`/`@for` Control Flow syntax).
+
 ---
 
 ## Phase 1: Datamodell & Editor-kontroller
