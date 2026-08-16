@@ -1,3 +1,11 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+  --map-rotation: 0deg;
+  --map-counter-rotation: 0deg;
+}
+
 .map-wrapper {
   position: relative;
   width: 100%;
@@ -7,11 +15,40 @@
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
 }
 
+.map-rotate-wrapper {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  transform: rotate(var(--map-rotation));
+  transition: transform 0.4s ease-out;
+  transform-origin: center center;
+}
+
 .map-container {
   width: 100%;
   height: 100%;
   z-index: 1;
   background-color: #1a202c;
+}
+
+::ng-deep .leaflet-tile-pane {
+  top: -60%;
+  left: -60%;
+  width: 220%;
+  height: 220%;
+}
+
+::ng-deep .green-marker > div,
+::ng-deep .hazard-marker > div,
+::ng-deep .tee-marker-badge > div,
+::ng-deep .shot-marker-badge > div,
+::ng-deep .target-line-badge > div,
+::ng-deep .target-marker-wrapper,
+::ng-deep .custom-gps-marker {
+  transform: rotate(var(--map-counter-rotation));
+  transition: transform 0.4s ease-out;
 }
 
 /* Custom GPS Pulsing Dot */

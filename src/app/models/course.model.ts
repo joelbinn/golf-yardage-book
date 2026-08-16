@@ -16,12 +16,26 @@ export interface Green {
   back: LatLng;
 }
 
+export interface Tee {
+  id: string;
+  name: string;
+  color?: string;
+  position: LatLng;
+}
+
+export interface TargetLine {
+  teeId?: string;
+  waypoints: LatLng[];
+}
+
 export interface Hole {
   number: number;
   par: number;
   handicapIndex: number;
   green: Green;
   objects: CourseObject[];
+  tees?: Tee[];
+  targetLine?: TargetLine;
 }
 
 export interface Course {

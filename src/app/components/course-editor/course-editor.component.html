@@ -193,6 +193,93 @@
           </div>
         </div>
 
+        <!-- Tees Card -->
+        <div class="section-label">Tee-positioner på hål {{ currentHoleNumber() }}</div>
+        <div class="hazards-list">
+          @for (t of hole.tees || []; track t.id) {
+            <div class="hazard-row">
+              <span class="hazard-type-dot" [style.background-color]="t.color || '#eab308'"></span>
+              <div class="hazard-info">
+                <span class="hazard-name">Tee {{ t.name }}</span>
+                <span class="hazard-coord">
+                  {{ t.position.lat.toFixed(5) }}, {{ t.position.lng.toFixed(5) }}
+                </span>
+              </div>
+              <button type="button" class="btn-remove-hazard" (click)="deleteTee(t.id)">
+                ✕
+              </button>
+            </div>
+          } @empty {
+            <div class="empty-hazards">Inga tees tillagda på detta hål ännu.</div>
+          }
+        </div>
+
+        <div class="hazard-actions">
+          <button type="button" class="btn-add-hazard-gps" (click)="openAddTeeModal(true)">
+            + Sätt Tee från min GPS
+          </button>
+          <button
+            type="button"
+            class="btn-add-hazard-map"
+            [class.active]="placementMode() === 'tee'"
+            (click)="openAddTeeModal(false)"
+          >
+            Placera Tee via kartan
+          </button>
+        </div>
+
+        <!-- Target Line Card -->
+        <div class="section-label">Tänkt spellinje</div>
+        <div class="green-points-card">
+          @if (hole.targetLine) {
+            <div class="target-line-info" style="padding:10px; display:flex; flex-direction:column; gap:8px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                <label style="font-size:0.8rem; font-weight:bold; color:#5c544d;">Utgår från Tee:</label>
+                <select
+                  class="text-input"
+                  style="width:auto; padding:4px 8px; font-size:0.85rem;"
+                  [ngModel]="hole.targetLine.teeId"
+                  (ngModelChange)="setTargetLineTee($event)"
+                >
+                  @for (t of hole.tees || []; track t.id) {
+                    <option [value]="t.id">Tee {{ t.name }}</option>
+                  }
+                </select>
+              </div>
+
+              <div style="font-size:0.8rem; color:#5c544d;">
+                {{ hole.targetLine.waypoints.length }} fairway-brytpunkter
+              </div>
+
+              <div style="display:flex; gap:6px;">
+                <button
+                  type="button"
+                  class="btn-point-action"
+                  [class.active]="placementMode() === 'targetLine'"
+                  (click)="toggleTargetLineMode()"
+                  style="flex:1;"
+                >
+                  {{ placementMode() === 'targetLine' ? 'Klicka på kartan för brytpunkter' : 'Klicka ut brytpunkter' }}
+                </button>
+                <button type="button" class="btn-remove-hazard" (click)="clearTargetLine()" title="Rensa spellinje">
+                  ✕
+                </button>
+              </div>
+            </div>
+          } @else {
+            <div style="padding:10px;">
+              <button
+                type="button"
+                class="btn-add-hazard-map"
+                [class.active]="placementMode() === 'targetLine'"
+                (click)="toggleTargetLineMode()"
+              >
+                + Rita tänkt spellinje
+              </button>
+            </div>
+          }
+        </div>
+
         <!-- Hazards Card -->
         <div class="section-label">Hinder på hål {{ currentHoleNumber() }}</div>
         <div class="hazards-list">
@@ -271,6 +358,8 @@
           <app-map
             [greenPoints]="hole.green"
             [hazards]="hole.objects"
+            [tees]="hole.tees"
+            [targetLine]="hole.targetLine"
             [enableMeasureMode]="!placementMode()"
             (mapClick)="onMapClick($event)"
           ></app-map>
@@ -348,6 +437,84 @@
           Spara hinder
         </button>
         <button type="button" class="btn-modal-cancel" (click)="closeHazardModal()">
+          Avbryt
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Tee Add Modal -->
+  @if (showTeeModal()) {
+    <div class="modal-overlay" (click)="closeTeeModal()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-drag-handle"></div>
+        <h3 class="modal-title">Ny Tee</h3>
+        <p class="modal-subtitle">Positionera Tee för hål {{ currentHoleNumber() }}</p>
+
+        <div class="form-group">
+          <label class="form-label">Tee-namn / Beteckning</label>
+          <input
+            type="text"
+            class="text-input"
+            placeholder="t.ex. Gul, Vit, Röd, 58"
+            [ngModel]="teeName()"
+            (ngModelChange)="teeName.set($event)"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Färg</label>
+          <div style="display:flex; gap:10px; margin-top:6px;">
+            <button
+              type="button"
+              class="type-btn"
+              [class.active]="teeColor() === '#eab308'"
+              (click)="teeColor.set('#eab308')"
+            >
+              <span class="type-dot" style="background:#eab308"></span>
+              <span>Gul</span>
+            </button>
+            <button
+              type="button"
+              class="type-btn"
+              [class.active]="teeColor() === '#f8fafc'"
+              (click)="teeColor.set('#f8fafc')"
+            >
+              <span class="type-dot" style="background:#f8fafc; border:1px solid #ccc"></span>
+              <span>Vit</span>
+            </button>
+            <button
+              type="button"
+              class="type-btn"
+              [class.active]="teeColor() === '#ef4444'"
+              (click)="teeColor.set('#ef4444')"
+            >
+              <span class="type-dot" style="background:#ef4444"></span>
+              <span>Röd</span>
+            </button>
+            <button
+              type="button"
+              class="type-btn"
+              [class.active]="teeColor() === '#3b82f6'"
+              (click)="teeColor.set('#3b82f6')"
+            >
+              <span class="type-dot" style="background:#3b82f6"></span>
+              <span>Blå</span>
+            </button>
+          </div>
+        </div>
+
+        @if (teePos(); as pos) {
+          <div class="coords-badge">
+            <span class="gps-dot-small"></span>
+            <span>{{ pos.lat.toFixed(5) }}, {{ pos.lng.toFixed(5) }}</span>
+          </div>
+        }
+
+        <button type="button" class="btn-save-hazard" (click)="saveTee()">
+          Spara Tee
+        </button>
+        <button type="button" class="btn-modal-cancel" (click)="closeTeeModal()">
           Avbryt
         </button>
       </div>

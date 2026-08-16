@@ -43,6 +43,11 @@ export class PlayRoundComponent implements OnInit {
   readonly currentHoleNumber = signal<number>(1);
   readonly unit = computed<DistanceUnit>(() => this.settingsService.unit() === 'y' ? 'yards' : 'meters');
   readonly measurePoint = signal<{ position: LatLng; distanceMeters: number } | null>(null);
+  readonly rotateToHole = signal<boolean>(true);
+
+  toggleMapOrientation(): void {
+    this.rotateToHole.update((v) => !v);
+  }
 
   // Bottom Sheet Partial & Fluid Drag State
   readonly isBottomSheetExpanded = signal<boolean>(false);
@@ -482,7 +487,7 @@ export class PlayRoundComponent implements OnInit {
       this.storage.saveRound(r);
     }
     setTimeout(() => {
-      this.mapComponent?.centerOnGreen();
+      this.mapComponent?.fitHoleBounds();
     }, 50);
   }
 

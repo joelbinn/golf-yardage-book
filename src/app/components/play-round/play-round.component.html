@@ -4,9 +4,13 @@
     <app-map
       [greenPoints]="currentHole()?.green"
       [hazards]="currentHole()?.objects"
+      [tees]="currentHole()?.tees"
+      [targetLine]="currentHole()?.targetLine"
       [shots]="currentHoleShots()"
       [unitLabel]="settingsService.getUnitLabel() === 'yd' ? 'yd' : 'm'"
       [enableMeasureMode]="true"
+      [rotateToHole]="rotateToHole()"
+      (toggleOrientation)="toggleMapOrientation()"
     ></app-map>
   </div>
 
@@ -34,6 +38,19 @@
     </div>
 
     <div class="header-pill-right">
+      <!-- Orientation Toggle Button (Hålinriktad vs Norr Upp) -->
+      <button
+        class="unit-toggle-btn"
+        [class.active]="rotateToHole()"
+        (click)="toggleMapOrientation()"
+        [title]="rotateToHole() ? 'Växla till Norr Upp' : 'Växla till Hålinriktad (Tee ➔ Green)'"
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" [style.transform]="rotateToHole() ? 'rotate(0deg)' : 'rotate(45deg)'">
+          <polygon points="12 2 19 21 12 17 5 21 12 2"></polygon>
+        </svg>
+        <span>{{ rotateToHole() ? 'Hål' : 'Norr' }}</span>
+      </button>
+
       <!-- GPS Badge -->
       <div class="gps-badge" [ngClass]="gpsQualityClass()" [title]="'GPS-noggrannhet: ' + gpsAccuracyText()">
         <span class="gps-dot"></span>

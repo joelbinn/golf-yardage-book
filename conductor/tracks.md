@@ -18,8 +18,8 @@
 - [x] **Track: Visning av Git SHA i Mer-menyn**
   *Link: [archive/git_sha_display_20260814/index.md](archive/git_sha_display_20260814/index.md)*
 
-- [ ] **Track: Tee-positioner & Tänkt Spellinje**
-  *Link: [tracks/tee_target_line_20260814/index.md](tracks/tee_target_line_20260814/index.md)*
+- [x] **Track: Tee-positioner & Tänkt Spellinje**
+  *Link: [archive/tee_target_line_20260814/index.md](archive/tee_target_line_20260814/index.md)*
 
 - [x] **Track: GitHub-Synkindikator i den Undre Menyn**
   *Link: [archive/sync_indicator_20260814/index.md](archive/sync_indicator_20260814/index.md)*

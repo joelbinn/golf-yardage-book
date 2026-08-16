@@ -1,6 +1,9 @@
 <div class="map-wrapper">
-  <!-- Leaflet Map Container -->
-  <div #mapContainer class="map-container"></div>
+  <!-- Map Rotate Wrapper -->
+  <div class="map-rotate-wrapper">
+    <!-- Leaflet Map Container -->
+    <div #mapContainer class="map-container"></div>
+  </div>
 
   <!-- Distance Measurement Overlay Card -->
   @if (measuredDistanceMeters() !== null) {
@@ -25,8 +28,19 @@
 
   <!-- Map Action Controls Overlay -->
   <div class="map-controls">
+    <button
+      class="control-btn compass-btn"
+      [class.active]="rotateToHole"
+      (click)="onToggleOrientation()"
+      [title]="rotateToHole ? 'Karta: Hålinriktad (Green högst upp). Klicka för Norr Upp' : 'Karta: Norr Upp. Klicka för Hålinriktad'"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="icon compass-icon" [style.transform]="rotateToHole ? 'rotate(0deg)' : 'rotate(-45deg)'">
+        <polygon points="12 2 19 21 12 17 5 21 12 2"></polygon>
+      </svg>
+    </button>
+
     @if (hasGreenPosition()) {
-      <button class="control-btn green-btn" (click)="centerOnGreen()" title="Centrera på green">
+      <button class="control-btn green-btn" (click)="centerOnGreen()" title="Återställ hålvy">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="icon">
           <circle cx="12" cy="12" r="7"></circle>
           <path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path>
