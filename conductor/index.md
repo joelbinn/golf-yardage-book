@@ -17,7 +17,7 @@
 - [Inställningar, Backup & GitHub-synk](tracks/settings_sync_20260814)
 
 ## Active Tracks
-None.
+- [Visning av Avstånd vid Målpunkt för Touch to Measure](tracks/touch_to_measure_distance_fix_20260816/index.md)
 
 ## Archived Tracks
 - [Redesign av Hålvy i Spela Runda](archive/play_round_hole_view_redesign_20260815/index.md)
