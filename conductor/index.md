@@ -17,9 +17,10 @@
 - [Inställningar, Backup & GitHub-synk](tracks/settings_sync_20260814)
 
 ## Active Tracks
-- [Visning av Avstånd vid Målpunkt för Touch to Measure](tracks/touch_to_measure_distance_fix_20260816/index.md)
+None.
 
 ## Archived Tracks
+- [Visning av Avstånd vid Målpunkt för Touch to Measure](archive/touch_to_measure_distance_fix_20260816/index.md)
 - [Redesign av Hålvy i Spela Runda](archive/play_round_hole_view_redesign_20260815/index.md)
 - [Digitalt Scorekort & Rundhistorik](tracks/scorecard_history_20260814/index.md)
 - [Spela Runda – Live GPS & Avståndsmätning](archive/play-round-gps/index.md)
