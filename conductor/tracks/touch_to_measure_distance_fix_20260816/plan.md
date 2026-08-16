@@ -1,5 +1,8 @@
 # Implementation Plan: Visning av Avstånd vid Målpunkt för Touch to Measure
 
+## Core Guidelines & Skill Usage
+1. **Developer Skill**: Skillet [`angular-developer`](file:///Users/joel/.gemini/config/skills/angular-developer/SKILL.md) skall användas för all komponent- och tjänsteutveckling (Angular Signals, Standalone Components, `@if`/`@for` Control Flow syntax).
+
 ## Phase 1: Marker Icon HTML & CSS Enhancements
 - [ ] Task: Uppdatera `MapComponent` för att rendera avståndsetikett vid målpunktsmarkören
   - [ ] Uppdatera `setMeasureTarget()` och `recalculateDistance()` i `map.component.ts` så att `measureMarker` Leaflet `L.divIcon` inkluderar avståndsetiketten (`.target-distance-pill`).
